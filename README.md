@@ -17,9 +17,11 @@ very strict customer and release inspector standing outside it.
    first-party requests, missing actions, and layout overflow.
 5. Uses Stagehand to recover from harmless selector drift while keeping business
    expectations and safety rules fixed.
-6. Calls public health, database, and schema oracles.
-7. Produces screenshots, Browserbase replay links, timings, and structured JSON.
-8. Applies one release policy. Missing evidence blocks the release; infrastructure
+6. Uses the authenticated owner browser session to verify 32 PestFlow API
+   contracts behind the desktop, without storing response bodies.
+7. Calls public health, database, and schema oracles.
+8. Produces screenshots, Browserbase replay links, timings, and structured JSON.
+9. Applies one release policy. Missing evidence blocks the release; infrastructure
    trouble is reported separately from a PestFlow product failure.
 
 This cannot mathematically guarantee zero bugs. It makes production much more
@@ -70,6 +72,12 @@ responses do not yet expose `deployment.commitSha`. Browserbase secrets and the
 isolated PestFlow owner context must also be added to this repository before its
 scheduled authenticated run can execute. These are explicit activation blockers,
 not claimed passes.
+
+The owner API registry and Browserbase-session executor are now wired and covered
+by six local policy tests. PestFlow's first equivalent synthetic-tenant production
+sweep passed 31/32 and reproduced the already-known `/companies/branches` 500;
+all five temporary accounts were deleted and login rejection was verified. The
+repair remains on PestFlow's reviewed QA branch until deployment is authorized.
 
 ## Documentation
 

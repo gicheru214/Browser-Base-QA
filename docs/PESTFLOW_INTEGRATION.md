@@ -16,6 +16,9 @@ isolated QA fixture lifecycle, and focused unit/integration/browser regressions.
 - `GET /health/db` proves the configured database is reachable and current.
 - `GET /health/schema` proves critical production tables and columns exist.
 - A dedicated Browserbase context logs into a disposable PestFlow QA company.
+- The authenticated session can read all 32 paths in
+  `qa/guardian/desktop-owner-api-contracts.json` with HTTP 200 and the declared
+  JSON contract.
 - Any future write journey uses allowlisted destinations, idempotency, automatic
   cleanup, and a backend/provider outcome oracle.
 
@@ -48,5 +51,8 @@ required exact-candidate gate; until then the missing identity must remain red.
 ## Current handoff boundary
 
 The PestFlow QA branch contains product fixes and in-repository deterministic
-coverage discovered by the live audit. Those are not duplicated here. This
-repository contains the reusable outside-in engine and shared contracts.
+coverage discovered by the live audit. The 32-endpoint read-only registry is
+shared here because it is an outside-in release contract; state-changing branch
+and business regressions remain beside PestFlow application code. The recorded
+Browserbase owner session runs the external contract once per Guardian run and
+stores no response bodies.

@@ -52,6 +52,8 @@ and ensure every escaped defect permanently improves the system.
 ### Outcome verification
 
 - Public frontend, API, database, and schema health oracles.
+- Thirty-two authenticated owner API contracts executed through the recorded
+  browser session, with complete-attempt, status, JSON-key, and array-shape proof.
 - Future authenticated database, email, SMS, payment, and provider oracles.
 - No success claim based only on clicking a button.
 
@@ -75,6 +77,7 @@ target commit, result, evidence link, and next action.
 
 - Registry of PestFlow journeys, personas, viewports, policies, and change rules.
 - Shared 27-route owner readiness catalog, including the Move-In Assistant.
+- Shared 32-endpoint owner API contract catalog with body-free evidence.
 - Browserbase/Stagehand runner with read-only enforcement and evidence capture.
 - Exact-deployment preflight.
 - Four public GET-only outcome oracles.
@@ -120,6 +123,8 @@ target commit, result, evidence link, and next action.
 - `npm test` passes.
 - `npm run guardian:dry-run` validates a non-empty execution matrix.
 - Every static owner route is present in the shared route catalog.
+- Every owner API contract is GET-only, same-origin constrained, completely
+  attempted, and emits no response body.
 - Every oracle is GET-only and same-origin constrained.
 - Live authenticated execution cannot silently skip the owner persona when the
   release gate requires it.

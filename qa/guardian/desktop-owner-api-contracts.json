@@ -1,0 +1,191 @@
+{
+  "schemaVersion": 1,
+  "contracts": [
+    {
+      "id": "company-profile",
+      "path": "/companies/me",
+      "requiredKeys": ["company"]
+    },
+    {
+      "id": "company-branches",
+      "path": "/companies/branches",
+      "requiredKeys": ["branches"],
+      "requiredArrayKeys": ["branches"]
+    },
+    {
+      "id": "dashboard-summary",
+      "path": "/dashboard/summary",
+      "requiredKeys": ["company", "counts", "stats", "recentJobs", "todayJobs"]
+    },
+    {
+      "id": "customers",
+      "path": "/customers",
+      "requiredKeys": ["customers", "salesNotePreview", "officeNotePreview"],
+      "requiredArrayKeys": ["customers"]
+    },
+    {
+      "id": "jobs",
+      "path": "/jobs",
+      "requiredKeys": ["jobs"],
+      "requiredArrayKeys": ["jobs"]
+    },
+    {
+      "id": "job-statuses",
+      "path": "/jobs/statuses",
+      "requiredKeys": ["statuses"],
+      "requiredArrayKeys": ["statuses"]
+    },
+    {
+      "id": "invoices",
+      "path": "/invoices",
+      "requiredKeys": ["invoices"],
+      "requiredArrayKeys": ["invoices"]
+    },
+    {
+      "id": "invoice-tax-summary",
+      "path": "/invoices/tax-summary",
+      "requiredKeys": ["from", "to", "invoice_count", "sales_tax_cents"]
+    },
+    {
+      "id": "technicians",
+      "path": "/technicians",
+      "requiredKeys": ["technicians"],
+      "requiredArrayKeys": ["technicians"]
+    },
+    {
+      "id": "service-documents",
+      "path": "/service-documents",
+      "requiredKeys": ["documents"],
+      "requiredArrayKeys": ["documents"]
+    },
+    {
+      "id": "service-types",
+      "path": "/service-types/categories",
+      "requiredKeys": ["categories"],
+      "requiredArrayKeys": ["categories"]
+    },
+    {
+      "id": "equipment",
+      "path": "/equipment",
+      "requiredKeys": ["equipment"],
+      "requiredArrayKeys": ["equipment"]
+    },
+    {
+      "id": "chemical-products",
+      "path": "/chemical-products",
+      "requiredKeys": ["products"],
+      "requiredArrayKeys": ["products"]
+    },
+    {
+      "id": "chemical-logs",
+      "path": "/chemical-logs",
+      "requiredKeys": ["rows"],
+      "requiredArrayKeys": ["rows"]
+    },
+    {
+      "id": "preset-notes",
+      "path": "/preset-notes",
+      "requiredKeys": ["presets"],
+      "requiredArrayKeys": ["presets"]
+    },
+    {
+      "id": "team-messages",
+      "path": "/messages",
+      "requiredKeys": ["messages", "notReady"],
+      "requiredArrayKeys": ["messages"]
+    },
+    {
+      "id": "common-replies",
+      "path": "/message-responses",
+      "requiredKeys": ["templates", "rules"],
+      "requiredArrayKeys": ["templates", "rules"]
+    },
+    {
+      "id": "in-app-notifications",
+      "path": "/in-app-notifications",
+      "requiredKeys": ["notifications", "unread_count"],
+      "requiredArrayKeys": ["notifications"]
+    },
+    {
+      "id": "notification-emails",
+      "path": "/notification-emails",
+      "requiredKeys": ["emails"],
+      "requiredArrayKeys": ["emails"]
+    },
+    {
+      "id": "notification-delivery-summary",
+      "path": "/notification-emails/summary",
+      "requiredKeys": ["email", "sms", "failedEmails"],
+      "requiredArrayKeys": ["failedEmails"]
+    },
+    {
+      "id": "sms-contacts",
+      "path": "/sms-contacts",
+      "requiredKeys": ["mtaConnected", "contacts"],
+      "requiredArrayKeys": ["contacts"]
+    },
+    {
+      "id": "website-chat-sites",
+      "path": "/website-chat/sites",
+      "requiredKeys": ["sites"],
+      "requiredArrayKeys": ["sites"]
+    },
+    {
+      "id": "website-chat-conversations",
+      "path": "/website-chat/conversations?channel=website&limit=100",
+      "requiredKeys": ["conversations"],
+      "requiredArrayKeys": ["conversations"]
+    },
+    {
+      "id": "campaigns",
+      "path": "/campaigns",
+      "requiredKeys": ["campaigns"],
+      "requiredArrayKeys": ["campaigns"]
+    },
+    {
+      "id": "sales-estimates",
+      "path": "/sales/estimates",
+      "requiredKeys": ["estimates", "summary"],
+      "requiredArrayKeys": ["estimates"]
+    },
+    {
+      "id": "migration-assistant-config",
+      "path": "/migration-assistant/config",
+      "requiredKeys": ["source", "provider", "providerLabel", "estimates"]
+    },
+    {
+      "id": "email-inbox",
+      "path": "/messaging/email-inbox?status=open",
+      "requiredKeys": ["messages", "counts"],
+      "requiredArrayKeys": ["messages"]
+    },
+    {
+      "id": "phone-calls",
+      "path": "/messaging/phone-calls",
+      "requiredKeys": ["calls", "summary"],
+      "requiredArrayKeys": ["calls"]
+    },
+    {
+      "id": "mta-health",
+      "path": "/messaging/mta-health",
+      "requiredKeys": ["configured"]
+    },
+    {
+      "id": "recent-sms-sends",
+      "path": "/messaging/recent-sends?pageSize=50&sinceDays=30",
+      "requiredKeys": ["configured", "rows", "total"],
+      "requiredArrayKeys": ["rows"]
+    },
+    {
+      "id": "customer-reviews",
+      "path": "/reviews/admin/list",
+      "requiredKeys": ["reviews", "google_review_url", "stats"],
+      "requiredArrayKeys": ["reviews"]
+    },
+    {
+      "id": "commission-settings",
+      "path": "/reports/commission-settings",
+      "requiredKeys": ["defaultRate", "rates"]
+    }
+  ]
+}

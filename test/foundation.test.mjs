@@ -7,10 +7,15 @@ import {
   selectGuardianMatrix,
   validateGuardianRegistry,
 } from "../scripts/lib/qa-guardian-policy.mjs";
+import {
+  runOwnerApiContracts,
+  validateOwnerApiContractCatalog,
+} from "../scripts/lib/qa-owner-api-contracts.mjs";
 
 const readJson = async (path) => JSON.parse(await readFile(new URL(path, import.meta.url), "utf8"));
 const registry = await readJson("../qa/guardian/desktop-journeys.json");
 const catalog = await readJson("../qa/guardian/desktop-owner-route-catalog.json");
+const apiContracts = await readJson("../qa/guardian/desktop-owner-api-contracts.json");
 const oracles = await readJson("../qa/guardian/outcome-oracles.json");
 
 test("guardian registry is structurally valid and produces work", () => {
@@ -29,6 +34,50 @@ test("shared catalog covers every static authenticated owner route", () => {
   );
   assert.equal(catalog.routes.length, 27);
   assert.deepEqual([...ownerPaths].sort(), [...catalogPaths].sort());
+});
+
+test("owner API catalog covers the broad data surface with GET-only relative contracts", () => {
+  assert.equal(apiContracts.contracts.length, 32);
+  assert.deepEqual(validateOwnerApiContractCatalog(apiContracts), []);
+  const escaped = structuredClone(apiContracts);
+  escaped.contracts[0].path = "//attacker.invalid/steal?token=value";
+  assert.ok(validateOwnerApiContractCatalog(escaped).some((error) => /relative|secret|escape/i.test(error)));
+});
+
+test("owner API sweep records contract metadata without retaining response bodies", async (t) => {
+  const catalogForTest = {
+    schemaVersion: 1,
+    contracts: [
+      { id: "healthy", path: "/healthy", requiredKeys: ["rows", "metadata"], requiredArrayKeys: ["rows"] },
+      { id: "broken", path: "/broken", requiredKeys: ["rows"], requiredArrayKeys: ["rows"] },
+    ],
+  };
+  t.mock.method(globalThis, "fetch", async (target) => {
+    if (String(target).endsWith("/healthy")) {
+      return new Response(JSON.stringify({
+        rows: [{ customerEmail: "private-customer@example.test" }],
+        metadata: { accessToken: "do-not-retain" },
+      }), { status: 200, headers: { "content-type": "application/json; charset=utf-8" } });
+    }
+    return new Response(JSON.stringify({ error: "private database detail" }), {
+      status: 500,
+      headers: { "content-type": "application/json" },
+    });
+  });
+  const page = { evaluate: async (callback, input) => callback(input) };
+  const evidence = await runOwnerApiContracts({
+    page,
+    apiUrl: "https://api.pestflow.test",
+    catalog: catalogForTest,
+  });
+
+  assert.equal(evidence.expectedChecks, 2);
+  assert.equal(evidence.passedChecks, 1);
+  assert.equal(evidence.failedChecks, 1);
+  assert.equal(evidence.results[0].arrayCounts.rows, 1);
+  assert.match(evidence.results[1].error, /HTTP 200.*500/);
+  const serialized = JSON.stringify(evidence);
+  assert.doesNotMatch(serialized, /private-customer|do-not-retain|private database detail/);
 });
 
 test("production oracles are read-only relative paths", () => {

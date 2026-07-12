@@ -17,10 +17,18 @@ import {
   selectCriticalNetworkFailures,
   selectCriticalPageErrors,
 } from "./lib/qa-browser-evidence.mjs";
+import {
+  runOwnerApiContracts,
+  validateOwnerApiContractCatalog,
+} from "./lib/qa-owner-api-contracts.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, "..");
 const registryPath = resolve(root, process.env.QA_GUARDIAN_REGISTRY || "qa/guardian/desktop-journeys.json");
+const ownerApiContractCatalogPath = resolve(
+  root,
+  process.env.QA_OWNER_API_CONTRACTS || "qa/guardian/desktop-owner-api-contracts.json",
+);
 const artifactRoot = resolve(root, process.env.QA_GUARDIAN_ARTIFACT_DIR || "artifacts/qa-guardian");
 
 const PageStateSchema = z.object({
@@ -180,7 +188,18 @@ async function executeStep(context) {
   throw new Error(`Unsupported step type: ${step.type}`);
 }
 
-async function runMatrixEntry({ registry, baseUrl, apiUrl, runId, journey, deviceId, device, environment }) {
+async function runMatrixEntry({
+  registry,
+  ownerApiContractCatalog,
+  runApiContracts,
+  baseUrl,
+  apiUrl,
+  runId,
+  journey,
+  deviceId,
+  device,
+  environment,
+}) {
   const outputDir = join(artifactRoot, runId, slug(journey.id), slug(deviceId));
   await mkdir(outputDir, { recursive: true });
   const persona = registry.personas[journey.persona];
@@ -322,6 +341,41 @@ async function runMatrixEntry({ registry, baseUrl, apiUrl, runId, journey, devic
       }
     }
 
+    if (runApiContracts) {
+      const startedAt = new Date().toISOString();
+      try {
+        const apiContractEvidence = await runOwnerApiContracts({
+          page,
+          apiUrl,
+          catalog: ownerApiContractCatalog,
+        });
+        await writeFile(
+          join(artifactRoot, runId, "owner-api-contracts.json"),
+          `${JSON.stringify(apiContractEvidence, null, 2)}\n`,
+        );
+        stepResults.push({
+          id: "owner-api-contracts",
+          type: "authenticated-api-contracts",
+          status: apiContractEvidence.failedChecks > 0 ? "failed" : "passed",
+          startedAt,
+          completedAt: new Date().toISOString(),
+          output: apiContractEvidence,
+          ...(apiContractEvidence.failedChecks > 0
+            ? { error: `${apiContractEvidence.failedChecks}/${apiContractEvidence.expectedChecks} owner API contracts failed` }
+            : {}),
+        });
+      } catch (error) {
+        stepResults.push({
+          id: "owner-api-contracts",
+          type: "authenticated-api-contracts",
+          status: "failed",
+          startedAt,
+          completedAt: new Date().toISOString(),
+          error: safeError(error),
+        });
+      }
+    }
+
     const criticalConsoleErrors = consoleErrors.filter((entry) => (
       /uncaught|typeerror|referenceerror|chunkloaderror|error boundary|cannot read properties/i.test(entry.text) &&
       !/favicon/i.test(entry.text)
@@ -411,14 +465,26 @@ async function runMatrixEntry({ registry, baseUrl, apiUrl, runId, journey, devic
 async function main() {
   const options = parseArgs(process.argv.slice(2));
   const registry = JSON.parse(await readFile(registryPath, "utf8"));
+  const ownerApiContractCatalog = JSON.parse(await readFile(ownerApiContractCatalogPath, "utf8"));
   const registryErrors = validateGuardianRegistry(registry);
   if (registryErrors.length) throw new Error(`Invalid QA Guardian registry:\n- ${registryErrors.join("\n- ")}`);
+  const ownerApiContractErrors = validateOwnerApiContractCatalog(ownerApiContractCatalog);
+  if (ownerApiContractErrors.length) {
+    throw new Error(`Invalid owner API contract catalog:\n- ${ownerApiContractErrors.join("\n- ")}`);
+  }
   const matrix = selectGuardianMatrix(registry, options);
   if (!matrix.length) throw new Error("No desktop Guardian journeys matched the requested filters");
 
   if (options.list || options.dryRun) {
     const rows = matrix.map(({ journey, deviceId }) => ({ journeyId: journey.id, title: journey.title, tier: journey.tier, persona: journey.persona, deviceId }));
-    console.log(JSON.stringify({ registry: registryPath, valid: true, count: rows.length, rows }, null, 2));
+    console.log(JSON.stringify({
+      registry: registryPath,
+      ownerApiContracts: ownerApiContractCatalogPath,
+      ownerApiContractCount: ownerApiContractCatalog.contracts.length,
+      valid: true,
+      count: rows.length,
+      rows,
+    }, null, 2));
     return;
   }
 
@@ -437,9 +503,21 @@ async function main() {
     intervalMs: Number(process.env.QA_GUARDIAN_DEPLOYMENT_POLL_MS || 5_000),
   });
   const results = [];
+  let ownerApiContractsPending = true;
   for (const entry of matrix) {
     console.log(`[qa-guardian] ${entry.journey.id} on ${entry.deviceId}`);
-    results.push(await runMatrixEntry({ registry, baseUrl, apiUrl, runId, environment: options.environment, ...entry }));
+    const runApiContracts = ownerApiContractsPending && entry.journey.persona === "owner";
+    results.push(await runMatrixEntry({
+      registry,
+      ownerApiContractCatalog,
+      runApiContracts,
+      baseUrl,
+      apiUrl,
+      runId,
+      environment: options.environment,
+      ...entry,
+    }));
+    if (runApiContracts) ownerApiContractsPending = false;
   }
 
   const summary = {
