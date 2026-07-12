@@ -290,6 +290,10 @@ array counts. Its first production run on 2026-07-12 passed 31/32 and reproduced
 the company-branches HTTP 500. The same branch includes the server repair plus a
 state-changing synthetic-tenant regression for creation, single-primary
 enforcement, cross-tenant denial, primary transfer, and safe deactivation.
+The next write-path layer covers equipment, preset notes, and chemical products:
+each resource is created, found in its list, blocked from cross-tenant mutation,
+updated, explicitly deleted, and proved absent. A focused production run passed
+all three lifecycles and completed 5/5 account/session/login-rejection cleanup.
 
 A state-changing journey is green only when all required layers agree. For an
 invoice send, that can include UI completion, API response, invoice row, correct
@@ -490,3 +494,6 @@ the current dynamic catalog includes that twenty-seventh route automatically.
 The subsequent authenticated API contract audit passed 31/32 and reproduced only
 the already-known production branch endpoint failure; 5/5 disposable accounts
 were deleted with session clearing and credential rejection proved.
+The focused owner-resource lifecycle then passed equipment, preset notes, and
+chemical products against production in 2.4 minutes, with all five disposable
+accounts again fully removed and rejected at sign-in.
