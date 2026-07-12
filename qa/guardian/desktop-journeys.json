@@ -1,0 +1,452 @@
+{
+  "schemaVersion": 1,
+  "suite": "PestFlow Desktop Guardian",
+  "defaultBaseUrl": "https://new.pestflow.org",
+  "devices": {
+    "desktop-1440": { "width": 1440, "height": 900, "tier": 0 },
+    "laptop-1280": { "width": 1280, "height": 800, "tier": 0 },
+    "wide-1920": { "width": 1920, "height": 1080, "tier": 1 },
+    "tablet-landscape": { "width": 1024, "height": 768, "tier": 1 }
+  },
+  "personas": {
+    "anonymous": { "contextEnv": null, "authenticated": false },
+    "owner": { "contextEnv": "PESTFLOW_QA_OWNER_CONTEXT_ID", "authenticated": true }
+  },
+  "coverageDelegations": {
+    "/customers/:id": "e2e/desktop-critical-workflows.spec.ts",
+    "/documents/service-notification/preview": "e2e/desktop-critical-workflows.spec.ts",
+    "/jobs/:jobId/tech-view": "e2e/desktop-critical-workflows.spec.ts",
+    "/features/:featureId": "e2e/staging-feature-pages.spec.ts and qa/new-50-feature-manifest.json"
+  },
+  "forbiddenActionPatterns": [
+    "delete",
+    "remove account",
+    "send invoice",
+    "send email",
+    "send text",
+    "charge",
+    "pay now",
+    "refund",
+    "change password",
+    "invite user",
+    "disconnect integration",
+    "cancel subscription"
+  ],
+  "globalForbiddenContent": [
+    "application error",
+    "something went wrong",
+    "unexpected error",
+    "white screen",
+    "cannot read properties of undefined",
+    "referenceerror",
+    "typeerror"
+  ],
+  "journeys": [
+    {
+      "id": "desktop-auth-entry",
+      "title": "Desktop authentication entry points",
+      "tier": 0,
+      "persona": "anonymous",
+      "writePolicy": "read-only",
+      "viewports": ["desktop-1440", "laptop-1280"],
+      "oracles": ["navigation", "semantic-ui", "action-inventory", "console"],
+      "steps": [
+        {
+          "id": "login-route",
+          "type": "navigate",
+          "path": "/login?desktop=true",
+          "expectedStatuses": [200],
+          "expectedPath": "/login"
+        },
+        {
+          "id": "login-semantics",
+          "type": "extract",
+          "instruction": "Describe the visible PestFlow sign-in screen. Return the page title, headings, navigation items, primary actions, visible error messages, loading indicators, a short summary, and whether an authenticated dashboard is visible.",
+          "expectations": {
+            "requiredAny": ["sign in", "log in", "email"],
+            "forbiddenAny": ["application error", "something went wrong"],
+            "maxErrorMessages": 0
+          }
+        },
+        {
+          "id": "login-actions",
+          "type": "observe",
+          "instruction": "Find the email sign-in form controls and the primary sign-in action without clicking anything.",
+          "minimumActions": 2,
+          "allowedMethods": ["click", "fill", "type"]
+        },
+        {
+          "id": "signup-route",
+          "type": "navigate",
+          "path": "/signup?desktop=true",
+          "expectedStatuses": [200],
+          "expectedPath": "/signup"
+        },
+        {
+          "id": "signup-semantics",
+          "type": "extract",
+          "instruction": "Describe the visible PestFlow account creation screen. Return the page title, headings, navigation items, primary actions, visible error messages, loading indicators, a short summary, and whether an authenticated dashboard is visible.",
+          "expectations": {
+            "requiredAny": ["create", "sign up", "email"],
+            "forbiddenAny": ["application error", "something went wrong"],
+            "maxErrorMessages": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "desktop-owner-core",
+      "title": "Owner core operating desk",
+      "tier": 0,
+      "persona": "owner",
+      "writePolicy": "read-only",
+      "viewports": ["desktop-1440", "laptop-1280"],
+      "oracles": ["authenticated-route", "semantic-ui", "action-inventory", "console", "session-replay"],
+      "steps": [
+        {
+          "id": "dashboard",
+          "type": "route-check",
+          "path": "/dashboard?desktop=true",
+          "expectedStatuses": [200],
+          "expectedPath": "/dashboard",
+          "requiredAny": ["dashboard", "jobs", "revenue"],
+          "observe": "Find the main dashboard navigation and primary owner actions without clicking anything.",
+          "minimumActions": 3
+        },
+        {
+          "id": "schedule",
+          "type": "route-check",
+          "path": "/schedule?desktop=true",
+          "expectedStatuses": [200],
+          "expectedPath": "/schedule",
+          "requiredAny": ["schedule", "calendar", "job"],
+          "observe": "Find the visible schedule controls and primary scheduling actions without clicking anything.",
+          "minimumActions": 1
+        },
+        {
+          "id": "customers",
+          "type": "route-check",
+          "path": "/customers?desktop=true",
+          "expectedStatuses": [200],
+          "expectedPath": "/customers",
+          "requiredAny": ["customer", "new customer", "search"],
+          "observe": "Find customer search, filtering, and create-customer actions without clicking anything.",
+          "minimumActions": 2
+        },
+        {
+          "id": "jobs",
+          "type": "route-check",
+          "path": "/jobs?desktop=true",
+          "expectedStatuses": [200],
+          "expectedPath": "/jobs",
+          "requiredAny": ["job", "new job", "scheduled"],
+          "observe": "Find job search, filtering, and new-job actions without clicking anything.",
+          "minimumActions": 2
+        },
+        {
+          "id": "invoices",
+          "type": "route-check",
+          "path": "/invoices?desktop=true",
+          "expectedStatuses": [200],
+          "expectedPath": "/invoices",
+          "requiredAny": ["invoice", "new invoice", "unpaid"],
+          "observe": "Find invoice search, filtering, and new-invoice actions. Do not send, charge, or pay anything.",
+          "minimumActions": 2
+        }
+      ]
+    },
+    {
+      "id": "desktop-owner-operations",
+      "title": "Owner services, documents, routes, and inventory",
+      "tier": 1,
+      "persona": "owner",
+      "writePolicy": "read-only",
+      "viewports": ["desktop-1440", "wide-1920", "tablet-landscape"],
+      "oracles": ["authenticated-route", "semantic-ui", "action-inventory", "console", "session-replay"],
+      "steps": [
+        {
+          "id": "services",
+          "type": "route-check",
+          "path": "/services?desktop=true",
+          "expectedStatuses": [200],
+          "expectedPath": "/services",
+          "requiredAny": ["service", "pricing", "category"],
+          "observe": "Find service and pricing management actions without changing anything.",
+          "minimumActions": 1
+        },
+        {
+          "id": "documents",
+          "type": "route-check",
+          "path": "/documents?desktop=true",
+          "expectedStatuses": [200],
+          "expectedPath": "/documents",
+          "requiredAny": ["document", "agreement", "service"],
+          "observe": "Find document viewing, filtering, or creation actions without sending or deleting anything.",
+          "minimumActions": 1
+        },
+        {
+          "id": "routes",
+          "type": "route-check",
+          "path": "/routes?desktop=true",
+          "expectedStatuses": [200],
+          "expectedPath": "/routes",
+          "requiredAny": ["route", "technician", "optimize"],
+          "observe": "Find route viewing and optimization controls without changing assignments.",
+          "minimumActions": 1
+        },
+        {
+          "id": "inventory",
+          "type": "route-check",
+          "path": "/inventory?desktop=true",
+          "expectedStatuses": [200],
+          "expectedPath": "/inventory",
+          "requiredAny": ["inventory", "chemical", "product"],
+          "observe": "Find inventory search, receiving, truck, and product actions without changing inventory.",
+          "minimumActions": 1
+        },
+        {
+          "id": "reports",
+          "type": "route-check",
+          "path": "/reports?desktop=true",
+          "expectedStatuses": [200],
+          "expectedPath": "/reports",
+          "requiredAny": ["report", "revenue", "performance"],
+          "observe": "Find report filters, date controls, and export actions without exporting anything.",
+          "minimumActions": 1
+        },
+        {
+          "id": "product-usage-report",
+          "type": "route-check",
+          "path": "/reports/product-usage?desktop=true",
+          "expectedStatuses": [200],
+          "expectedPath": "/reports/product-usage",
+          "requiredAny": ["product", "usage", "report"],
+          "observe": "Find product usage report filters and export actions without exporting anything.",
+          "minimumActions": 1
+        },
+        {
+          "id": "pesticide-audit",
+          "type": "route-check",
+          "path": "/reports/pesticide-audit?desktop=true",
+          "expectedStatuses": [200],
+          "expectedPath": "/reports/pesticide-audit",
+          "requiredAny": ["pesticide", "audit", "report"],
+          "observe": "Find pesticide audit filters and report actions without changing records.",
+          "minimumActions": 1
+        },
+        {
+          "id": "tech-scorecard",
+          "type": "route-check",
+          "path": "/tech-scorecard?desktop=true",
+          "expectedStatuses": [200],
+          "expectedPath": "/tech-scorecard",
+          "requiredAny": ["technician", "score", "performance"],
+          "observe": "Find technician scorecard filters and drill-down actions without changing anything.",
+          "minimumActions": 1
+        },
+        {
+          "id": "winback",
+          "type": "route-check",
+          "path": "/winback?desktop=true",
+          "expectedStatuses": [200],
+          "expectedPath": "/winback",
+          "requiredAny": ["win", "customer", "timer"],
+          "observe": "Find win-back customer and campaign actions without sending anything.",
+          "minimumActions": 1
+        },
+        {
+          "id": "pest-score",
+          "type": "route-check",
+          "path": "/pest-score?desktop=true",
+          "expectedStatuses": [200],
+          "expectedPath": "/pest-score",
+          "requiredAny": ["pest", "score", "pressure"],
+          "observe": "Find pest pressure score filters and detail actions without changing data.",
+          "minimumActions": 1
+        },
+        {
+          "id": "route-waste",
+          "type": "route-check",
+          "path": "/route-waste?desktop=true",
+          "expectedStatuses": [200],
+          "expectedPath": "/route-waste",
+          "requiredAny": ["route", "waste", "audit"],
+          "observe": "Find route waste audit controls without modifying routes.",
+          "minimumActions": 1
+        },
+        {
+          "id": "chemical-cost",
+          "type": "route-check",
+          "path": "/chemical-cost?desktop=true",
+          "expectedStatuses": [200],
+          "expectedPath": "/chemical-cost",
+          "requiredAny": ["chemical", "cost", "calculator"],
+          "observe": "Find chemical cost calculator inputs without submitting or saving anything.",
+          "minimumActions": 1
+        }
+      ]
+    },
+    {
+      "id": "desktop-owner-growth-integrations",
+      "title": "Owner messaging, automation, and integrations",
+      "tier": 1,
+      "persona": "owner",
+      "writePolicy": "read-only",
+      "viewports": ["desktop-1440", "wide-1920"],
+      "oracles": ["authenticated-route", "semantic-ui", "action-inventory", "console", "session-replay"],
+      "steps": [
+        {
+          "id": "campaigns",
+          "type": "route-check",
+          "path": "/campaigns?desktop=true",
+          "expectedStatuses": [200],
+          "expectedPath": "/campaigns",
+          "requiredAny": ["campaign", "message", "customer"],
+          "observe": "Find campaign viewing and drafting actions without sending any message.",
+          "minimumActions": 1
+        },
+        {
+          "id": "sms-contacts",
+          "type": "route-check",
+          "path": "/sms-contacts?desktop=true",
+          "expectedStatuses": [200],
+          "expectedPath": "/sms-contacts",
+          "requiredAny": ["contact", "text", "sms"],
+          "observe": "Find SMS contact search and management actions without sending a text.",
+          "minimumActions": 1
+        },
+        {
+          "id": "message-responses",
+          "type": "route-check",
+          "path": "/message-responses?desktop=true",
+          "expectedStatuses": [200],
+          "expectedPath": "/message-responses",
+          "requiredAny": ["message", "response", "reply"],
+          "observe": "Find saved reply and response rule actions without sending or changing anything.",
+          "minimumActions": 1
+        },
+        {
+          "id": "sales-portal",
+          "type": "route-check",
+          "path": "/sales-portal?desktop=true",
+          "expectedStatuses": [200],
+          "expectedPath": "/sales-portal",
+          "requiredAny": ["sales", "portal", "enrollment"],
+          "observe": "Find sales portal navigation and enrollment actions without creating an enrollment.",
+          "minimumActions": 1
+        },
+        {
+          "id": "sales-portal-enroll",
+          "type": "route-check",
+          "path": "/sales-portal/enroll?desktop=true",
+          "expectedStatuses": [200],
+          "expectedPath": "/sales-portal/enroll",
+          "requiredAny": ["enroll", "customer", "service"],
+          "observe": "Find enrollment form controls without entering or submitting data.",
+          "minimumActions": 1
+        },
+        {
+          "id": "website-chat",
+          "type": "route-check",
+          "path": "/website-chat?desktop=true",
+          "expectedStatuses": [200],
+          "expectedPath": "/website-chat",
+          "requiredAny": ["website chat", "conversation", "site"],
+          "observe": "Find Website Chat site, installation, and conversation actions without changing configuration.",
+          "minimumActions": 1
+        },
+        {
+          "id": "ai-receptionist",
+          "type": "route-check",
+          "path": "/ai-receptionist?desktop=true",
+          "expectedStatuses": [200],
+          "expectedPath": "/ai-receptionist",
+          "requiredAny": ["receptionist", "call", "credit"],
+          "observe": "Find AI receptionist settings, calls, credits, and calendar actions without purchasing credits or changing settings.",
+          "minimumActions": 1
+        },
+        {
+          "id": "automations",
+          "type": "route-check",
+          "path": "/automations?desktop=true",
+          "expectedStatuses": [200],
+          "expectedPath": "/automations",
+          "requiredAny": ["automation", "workflow", "trigger"],
+          "observe": "Find automation viewing and creation actions without enabling or changing anything.",
+          "minimumActions": 1
+        },
+        {
+          "id": "settings",
+          "type": "route-check",
+          "path": "/settings?desktop=true",
+          "expectedStatuses": [200],
+          "expectedPath": "/settings",
+          "requiredAny": ["settings", "company", "account"],
+          "observe": "Find major settings sections and integration controls without saving, disconnecting, or changing anything.",
+          "minimumActions": 2
+        }
+      ]
+    },
+    {
+      "id": "desktop-public-tools",
+      "title": "Public pricing, support, and lead tools",
+      "tier": 1,
+      "persona": "anonymous",
+      "writePolicy": "read-only",
+      "viewports": ["desktop-1440", "laptop-1280", "tablet-landscape"],
+      "oracles": ["navigation", "semantic-ui", "action-inventory", "console"],
+      "steps": [
+        {
+          "id": "pricing",
+          "type": "route-check",
+          "path": "/pricing",
+          "expectedStatuses": [200],
+          "expectedPath": "/pricing",
+          "requiredAny": ["pricing", "plan", "pestflow"],
+          "observe": "Find pricing plan and signup actions without starting checkout.",
+          "minimumActions": 1
+        },
+        {
+          "id": "support",
+          "type": "route-check",
+          "path": "/support",
+          "expectedStatuses": [200],
+          "expectedPath": "/support",
+          "requiredAny": ["support", "help", "contact"],
+          "observe": "Find support and help actions without submitting a form.",
+          "minimumActions": 1
+        },
+        {
+          "id": "tools",
+          "type": "route-check",
+          "path": "/tools",
+          "expectedStatuses": [200],
+          "expectedPath": "/tools",
+          "requiredAny": ["tool", "calculator", "business"],
+          "observe": "Find all visible PestFlow business tool links without opening them.",
+          "minimumActions": 3
+        },
+        {
+          "id": "free-invoice",
+          "type": "route-check",
+          "path": "/free-invoice",
+          "expectedStatuses": [200],
+          "expectedPath": "/free-invoice",
+          "requiredAny": ["invoice", "customer", "free"],
+          "observe": "Find the free invoice form controls without entering or submitting any data.",
+          "minimumActions": 2
+        },
+        {
+          "id": "free-sign",
+          "type": "route-check",
+          "path": "/free-sign",
+          "expectedStatuses": [200],
+          "expectedPath": "/free-sign",
+          "requiredAny": ["sign", "document", "free"],
+          "observe": "Find the free signing form controls without entering or submitting any data.",
+          "minimumActions": 2
+        }
+      ]
+    }
+  ]
+}

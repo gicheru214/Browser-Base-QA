@@ -1,0 +1,188 @@
+{
+  "schemaVersion": 1,
+  "defaultDevices": ["desktop-1440"],
+  "rules": [
+    {
+      "id": "qa-guardian-infrastructure",
+      "description": "Changes to the Guardian itself require every semantic journey and its policy tests.",
+      "patterns": [
+        "qa/guardian/**",
+        "scripts/qa-guardian-*.mjs",
+        "scripts/lib/qa-guardian-*.mjs",
+        ".github/workflows/desktop-stagehand-guardian.yml",
+        ".github/workflows/desktop-qa-release-gate.yml"
+      ],
+      "journeys": ["*"],
+      "checks": ["guardian-policy", "guardian-dry-run", "incident-tests"]
+    },
+    {
+      "id": "shared-desktop-shell",
+      "description": "Router, application shell, shared desktop layout, API client, and global style changes can affect every desktop page.",
+      "patterns": [
+        "src/App.tsx",
+        "src/main.tsx",
+        "src/App.css",
+        "src/index.css",
+        "src/routes/**",
+        "src/components/AppLayout.tsx",
+        "src/components/AppErrorBoundary.tsx",
+        "src/components/ProtectedRoute.tsx",
+        "src/components/PageShell.tsx",
+        "src/components/PageHeader.tsx",
+        "src/components/ui/**",
+        "src/hooks/useAuth.tsx",
+        "src/hooks/useCompany.tsx",
+        "src/lib/api.ts",
+        "src/lib/auth-client.ts",
+        "server/index.ts",
+        "server/frontend.ts",
+        "server/routes/index.ts",
+        "server/middleware/**",
+        "server/lib/auth.ts",
+        "server/lib/companyAccess.ts"
+      ],
+      "journeys": ["*"],
+      "checks": ["desktop-critical", "guardian-policy"]
+    },
+    {
+      "id": "authentication",
+      "description": "Authentication and post-auth redirect changes threaten anonymous entry and every owner session.",
+      "patterns": [
+        "src/features/auth/**",
+        "src/lib/postAuthRedirect.ts",
+        "src/components/InlineCompanySetup.tsx",
+        "server/routes/me.ts",
+        "server/routes/companies.ts",
+        "server/routes/invites.ts",
+        "server/lib/accountDeletion.ts",
+        "server/lib/qaIdentity.ts",
+        "server/lib/signupWelcomeEmail.ts",
+        "scripts/qa-fixture-inventory.ts"
+      ],
+      "journeys": ["desktop-auth-entry", "desktop-owner-core"],
+      "checks": ["desktop-critical", "guardian-policy"]
+    },
+    {
+      "id": "core-operating-desk",
+      "description": "Dashboard, schedule, customer, job, invoice, and related API changes require the critical owner desk journey.",
+      "patterns": [
+        "src/features/dashboard/**",
+        "src/features/customers/**",
+        "src/features/jobs/**",
+        "src/features/invoices/**",
+        "src/components/FindBestSlotPopover.tsx",
+        "src/components/RecurringServiceWizard.tsx",
+        "src/lib/bestScheduleSlots.ts",
+        "server/routes/dashboard.ts",
+        "server/routes/customers.ts",
+        "server/routes/customer-notes.ts",
+        "server/routes/jobs.ts",
+        "server/routes/invoices.ts",
+        "server/routes/technicians.ts",
+        "server/lib/desktopOps.ts",
+        "server/lib/invoiceMath.ts"
+      ],
+      "journeys": ["desktop-owner-core"],
+      "checks": ["desktop-critical"]
+    },
+    {
+      "id": "operations-and-compliance",
+      "description": "Services, documents, inventory, routing, and reporting changes require the operations journey.",
+      "patterns": [
+        "src/features/documents/**",
+        "src/features/inventory/**",
+        "src/features/reports/**",
+        "src/features/services/**",
+        "src/components/ServiceDocument*.tsx",
+        "src/components/RouteSlider.tsx",
+        "src/lib/generatePdf.ts",
+        "src/lib/stateCompliance.ts",
+        "server/routes/chemical-*.ts",
+        "server/routes/equipment.ts",
+        "server/routes/reports.ts",
+        "server/routes/service-*.ts",
+        "server/routes/target-*.ts"
+      ],
+      "journeys": ["desktop-owner-operations"],
+      "checks": ["desktop-critical"]
+    },
+    {
+      "id": "growth-and-integrations",
+      "description": "Messaging, automation, receptionist, website chat, billing connection, and integration changes require the growth journey.",
+      "patterns": [
+        "src/features/operations/**",
+        "src/features/payments/**",
+        "src/features/commercial/**",
+        "src/features/sales/**",
+        "src/features/settings/**",
+        "src/services/**",
+        "src/lib/calendarSync.ts",
+        "src/lib/squareConnect.ts",
+        "src/lib/stripe*.ts",
+        "server/modules/**",
+        "server/routes/campaigns.ts",
+        "server/routes/messages.ts",
+        "server/routes/messaging.ts",
+        "server/routes/message-responses.ts",
+        "server/routes/quickbooks.ts",
+        "server/routes/sales.ts",
+        "server/routes/sms-*.ts",
+        "server/routes/square.ts",
+        "server/routes/stripe.ts",
+        "server/routes/website-chat.ts",
+        "server/lib/messageResponses.ts",
+        "server/lib/mobileTextAlerts.ts"
+      ],
+      "journeys": ["desktop-owner-growth-integrations"],
+      "checks": ["desktop-critical"]
+    },
+    {
+      "id": "desktop-feature-catalog",
+      "description": "Changes to the delegated dynamic feature catalog require the 48-feature deterministic browser suite plus an owner-shell semantic journey.",
+      "patterns": [
+        "src/features/featureScreens/**",
+        "qa/new-50-feature-manifest.json",
+        "e2e/staging-feature-pages.spec.ts",
+        "playwright.staging-features.config.ts"
+      ],
+      "journeys": ["desktop-owner-growth-integrations"],
+      "checks": ["desktop-50", "guardian-policy"]
+    },
+    {
+      "id": "public-and-hosted-tools",
+      "description": "Public, hosted, pricing, checkout, signature, and marketing route changes require the public tools journey.",
+      "patterns": [
+        "src/features/public/**",
+        "src/features/marketing/**",
+        "src/routes/marketingRoutes.tsx",
+        "src/routes/publicRoutes.tsx",
+        "src/features/documents/Hosted*.tsx",
+        "src/features/documents/CustomerSign.tsx",
+        "src/features/payments/PayInvoice.tsx",
+        "src/features/payments/Tip*.tsx",
+        "server/routes/public-sign.ts",
+        "server/routes/quiz.ts",
+        "server/routes/demo-reservations.ts"
+      ],
+      "journeys": ["desktop-public-tools"],
+      "checks": ["guardian-policy"]
+    },
+    {
+      "id": "build-and-runtime",
+      "description": "Dependency, build, and runtime configuration changes receive broad coverage because their blast radius is not route-specific.",
+      "patterns": [
+        "package.json",
+        "package-lock.json",
+        "vite.config.*",
+        "tsconfig*.json",
+        "tailwind.config.*",
+        "postcss.config.*",
+        "Dockerfile*",
+        "railway*.json",
+        ".env.example"
+      ],
+      "journeys": ["*"],
+      "checks": ["desktop-critical", "guardian-policy", "incident-tests"]
+    }
+  ]
+}

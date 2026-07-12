@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "routes": [
+    { "id": "dashboard", "path": "/dashboard?desktop=true", "expectedPath": "/dashboard", "selector": "h1", "heading": "Dashboard" },
+    { "id": "schedule", "path": "/schedule?desktop=true", "expectedPath": "/schedule", "selector": "[data-tour='schedule-header']", "heading": "Schedule" },
+    { "id": "customers", "path": "/customers?desktop=true", "expectedPath": "/customers", "selector": "[data-tour='customers-add-btn']" },
+    { "id": "jobs", "path": "/jobs?desktop=true", "expectedPath": "/jobs", "selector": "[data-tour='jobs-add-btn']" },
+    { "id": "invoices", "path": "/invoices?desktop=true", "expectedPath": "/invoices", "selector": "[data-tour='invoices-add-btn']" },
+    { "id": "services", "path": "/services?desktop=true", "expectedPath": "/services", "selector": "h1", "heading": "Services" },
+    { "id": "documents", "path": "/documents?desktop=true", "expectedPath": "/documents", "selector": "h1.pf-page-header-title", "heading": "Documents" },
+    { "id": "routes", "path": "/routes?desktop=true", "expectedPath": "/routes", "selector": "h1.pf-page-header-title", "heading": "Route Optimizer" },
+    { "id": "inventory", "path": "/inventory?desktop=true", "expectedPath": "/inventory", "selector": "h1.pf-page-header-title", "heading": "Product Inventory" },
+    { "id": "reports", "path": "/reports?desktop=true", "expectedPath": "/reports", "selector": "h1.pf-page-header-title", "heading": "Reports" },
+    { "id": "product-usage-report", "path": "/reports/product-usage?desktop=true", "expectedPath": "/reports/product-usage", "selector": "h1.pf-page-header-title", "heading": "Product Usage" },
+    { "id": "pesticide-audit", "path": "/reports/pesticide-audit?desktop=true", "expectedPath": "/reports/pesticide-audit", "selector": "h1", "heading": "State Compliance Report" },
+    { "id": "tech-scorecard", "path": "/tech-scorecard?desktop=true", "expectedPath": "/tech-scorecard", "selector": "h1", "heading": "Technician Scorecards" },
+    { "id": "winback", "path": "/winback?desktop=true", "expectedPath": "/winback", "selector": "h1", "heading": "Win-Back Timer" },
+    { "id": "pest-score", "path": "/pest-score?desktop=true", "expectedPath": "/pest-score", "selector": "h1", "heading": "Pest Pressure Scores" },
+    { "id": "route-waste", "path": "/route-waste?desktop=true", "expectedPath": "/route-waste", "selector": "h1.pf-page-header-title", "heading": "Route Waste Audit" },
+    { "id": "chemical-cost", "path": "/chemical-cost?desktop=true", "expectedPath": "/chemical-cost", "selector": "h1.pf-page-header-title", "heading": "Chemical Cost Calculator" },
+    { "id": "campaigns", "path": "/campaigns?desktop=true", "expectedPath": "/campaigns", "selector": "h1.pf-page-header-title", "heading": "Campaigns" },
+    { "id": "sms-contacts", "path": "/sms-contacts?desktop=true", "expectedPath": "/sms-contacts", "selector": "h1.pf-page-header-title", "heading": "SMS Contacts" },
+    { "id": "message-responses", "path": "/message-responses?desktop=true", "expectedPath": "/message-responses", "selector": "h1.pf-page-header-title", "heading": "Common Replies" },
+    { "id": "sales-portal", "path": "/sales-portal?desktop=true", "expectedPath": "/sales-portal", "selector": "h1.pf-page-header-title", "heading": "Sales Portal" },
+    { "id": "sales-portal-enroll", "path": "/sales-portal/enroll?desktop=true", "expectedPath": "/sales-portal/enroll", "selector": "h1", "heading": "New Customer Enrollment" },
+    { "id": "website-chat", "path": "/website-chat?desktop=true", "expectedPath": "/website-chat", "selector": "h1.pf-page-header-title", "heading": "Website Chat" },
+    { "id": "ai-receptionist", "path": "/ai-receptionist?desktop=true", "expectedPath": "/ai-receptionist", "selector": "h1.pf-page-header-title", "heading": "AI Receptionist" },
+    { "id": "automations", "path": "/automations?desktop=true", "expectedPath": "/automations", "selector": "h1", "heading": "Automations" },
+    { "id": "settings", "path": "/settings?desktop=true", "expectedPath": "/settings", "selector": "h1.pf-page-header-title", "heading": "Settings" }
+  ]
+}

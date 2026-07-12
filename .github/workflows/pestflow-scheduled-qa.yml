@@ -1,0 +1,66 @@
+name: PestFlow scheduled browser QA
+
+on:
+  workflow_dispatch:
+    inputs:
+      max_tier:
+        description: Highest journey tier to run
+        default: "1"
+        type: choice
+        options: ["0", "1"]
+  schedule:
+    - cron: "17 */6 * * *"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pestflow-scheduled-browser-qa
+  cancel-in-progress: false
+
+jobs:
+  browser-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run audit
+      - run: npm test
+      - run: npm run guardian:dry-run
+      - name: Require live browser configuration
+        env:
+          BROWSERBASE_API_KEY: ${{ secrets.BROWSERBASE_API_KEY }}
+          BROWSERBASE_PROJECT_ID: ${{ secrets.BROWSERBASE_PROJECT_ID }}
+          PESTFLOW_QA_OWNER_CONTEXT_ID: ${{ secrets.PESTFLOW_QA_OWNER_CONTEXT_ID }}
+        run: |
+          test -n "$BROWSERBASE_API_KEY"
+          test -n "$BROWSERBASE_PROJECT_ID"
+          test -n "$PESTFLOW_QA_OWNER_CONTEXT_ID"
+      - name: Public PestFlow outcome oracles
+        env:
+          QA_GUARDIAN_BASE_URL: https://new.pestflow.org
+          QA_GUARDIAN_API_URL: https://api.pestflow.org
+        run: npm run oracles
+      - name: Recorded Browserbase and Stagehand run
+        env:
+          BROWSERBASE_API_KEY: ${{ secrets.BROWSERBASE_API_KEY }}
+          BROWSERBASE_PROJECT_ID: ${{ secrets.BROWSERBASE_PROJECT_ID }}
+          PESTFLOW_QA_OWNER_CONTEXT_ID: ${{ secrets.PESTFLOW_QA_OWNER_CONTEXT_ID }}
+          QA_GUARDIAN_BASE_URL: https://new.pestflow.org
+          QA_GUARDIAN_API_URL: https://api.pestflow.org
+          QA_GUARDIAN_REQUIRE_ALL_PERSONAS: "1"
+          QA_GUARDIAN_ALLOW_WRITES: "0"
+        run: node scripts/qa-guardian-stagehand.mjs --tier=${{ inputs.max_tier || '1' }}
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pestflow-browser-qa-${{ github.run_id }}
+          path: artifacts/qa-guardian/
+          if-no-files-found: warn
+          retention-days: 14

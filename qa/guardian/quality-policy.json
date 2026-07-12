@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "name": "PestFlow Desktop Release Policy",
+  "browser": {
+    "maxFailed": 0,
+    "maxSkipped": 0,
+    "maxCriticalConsoleErrors": 0,
+    "warnUiReadyMs": 5000,
+    "blockUiReadyMs": 15000
+  },
+  "deterministic": {
+    "requiredExitCode": 0
+  },
+  "outcomeOracles": {
+    "minRequired": 4,
+    "maxFailed": 0
+  },
+  "evidence": {
+    "requireSessionUrl": true,
+    "requirePassedStepScreenshot": true
+  }
+}

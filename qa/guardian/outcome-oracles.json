@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "name": "PestFlow public release outcome oracles",
+  "defaultTimeoutMs": 15000,
+  "oracles": [
+    {
+      "id": "frontend-health",
+      "title": "Frontend service is healthy",
+      "base": "app",
+      "path": "/health",
+      "method": "GET",
+      "matchExpectedSha": true,
+      "expectedStatuses": [200],
+      "assertions": [
+        { "path": "ok", "operator": "equals", "value": true },
+        { "path": "service", "operator": "equals", "value": "pestflow-frontend" },
+        { "path": "deployment.commitSha", "operator": "present" }
+      ]
+    },
+    {
+      "id": "api-health",
+      "title": "API service is healthy",
+      "base": "api",
+      "path": "/health",
+      "method": "GET",
+      "matchExpectedSha": true,
+      "expectedStatuses": [200],
+      "assertions": [
+        { "path": "ok", "operator": "equals", "value": true },
+        { "path": "service", "operator": "equals", "value": "pestflow-checkout-api" },
+        { "path": "deployment.commitSha", "operator": "present" }
+      ]
+    },
+    {
+      "id": "database-health",
+      "title": "Configured database is reachable and current",
+      "base": "api",
+      "path": "/health/db",
+      "method": "GET",
+      "expectedStatuses": [200],
+      "assertions": [
+        { "path": "ok", "operator": "equals", "value": true },
+        { "path": "now", "operator": "isoWithinSeconds", "value": 300 }
+      ]
+    },
+    {
+      "id": "schema-health",
+      "title": "Critical desktop schema is present",
+      "base": "api",
+      "path": "/health/schema",
+      "method": "GET",
+      "timeoutMs": 30000,
+      "expectedStatuses": [200],
+      "assertions": [
+        { "path": "ok", "operator": "equals", "value": true },
+        {
+          "path": "tables",
+          "operator": "includesAll",
+          "value": ["companies", "customers", "jobs", "technicians", "invoices", "service_documents", "company_members"]
+        },
+        {
+          "path": "desktop_ops_invoice_columns",
+          "operator": "includesAll",
+          "value": ["job_id", "payment_terms", "auto_charge_status"]
+        },
+        {
+          "path": "desktop_job_control_columns",
+          "operator": "includesAll",
+          "value": ["scheduled_end_date", "customer_time_window", "work_order_number"]
+        }
+      ]
+    }
+  ]
+}

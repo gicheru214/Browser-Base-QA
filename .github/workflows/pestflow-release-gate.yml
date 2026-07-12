@@ -1,0 +1,73 @@
+name: PestFlow external release gate
+
+on:
+  workflow_call:
+    inputs:
+      expected_sha:
+        required: true
+        type: string
+      base_url:
+        required: false
+        default: https://new.pestflow.org
+        type: string
+      api_url:
+        required: false
+        default: https://api.pestflow.org
+        type: string
+      max_tier:
+        required: false
+        default: 1
+        type: number
+    secrets:
+      BROWSERBASE_API_KEY:
+        required: true
+      BROWSERBASE_PROJECT_ID:
+        required: true
+      PESTFLOW_QA_OWNER_CONTEXT_ID:
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  exact-candidate-browser-proof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Check out QA control plane
+        uses: actions/checkout@v4
+        with:
+          repository: gicheru214/Browser-Base-QA
+          ref: main
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run audit
+      - run: npm test
+      - name: Public exact-candidate oracles
+        env:
+          QA_GUARDIAN_BASE_URL: ${{ inputs.base_url }}
+          QA_GUARDIAN_API_URL: ${{ inputs.api_url }}
+          QA_GUARDIAN_EXPECTED_SHA: ${{ inputs.expected_sha }}
+        run: npm run oracles
+      - name: Recorded exact-candidate browser proof
+        env:
+          BROWSERBASE_API_KEY: ${{ secrets.BROWSERBASE_API_KEY }}
+          BROWSERBASE_PROJECT_ID: ${{ secrets.BROWSERBASE_PROJECT_ID }}
+          PESTFLOW_QA_OWNER_CONTEXT_ID: ${{ secrets.PESTFLOW_QA_OWNER_CONTEXT_ID }}
+          QA_GUARDIAN_BASE_URL: ${{ inputs.base_url }}
+          QA_GUARDIAN_API_URL: ${{ inputs.api_url }}
+          QA_GUARDIAN_EXPECTED_SHA: ${{ inputs.expected_sha }}
+          QA_GUARDIAN_REQUIRE_ALL_PERSONAS: "1"
+          QA_GUARDIAN_ALLOW_WRITES: "0"
+        run: node scripts/qa-guardian-stagehand.mjs --tier=${{ inputs.max_tier }}
+      - name: Upload release evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pestflow-release-proof-${{ inputs.expected_sha }}
+          path: artifacts/qa-guardian/
+          if-no-files-found: error
+          retention-days: 30

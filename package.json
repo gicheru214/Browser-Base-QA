@@ -1,0 +1,24 @@
+{
+  "name": "browser-base-qa",
+  "version": "0.1.0",
+  "private": true,
+  "description": "External Browserbase and Stagehand reliability gate for PestFlow",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "audit": "npm audit --audit-level=moderate",
+    "test": "node --test test/*.test.mjs",
+    "guardian:list": "node scripts/qa-guardian-stagehand.mjs --list",
+    "guardian:dry-run": "node scripts/qa-guardian-stagehand.mjs --dry-run --tier=1",
+    "guardian:run": "node scripts/qa-guardian-stagehand.mjs --tier=1",
+    "guardian:tier0": "node scripts/qa-guardian-stagehand.mjs --tier=0",
+    "oracles": "node scripts/qa-outcome-oracles.mjs",
+    "verdict": "node scripts/qa-release-verdict.mjs"
+  },
+  "dependencies": {
+    "@browserbasehq/stagehand": "^3.6.0",
+    "zod": "^3.25.76"
+  }
+}
