@@ -27,7 +27,7 @@ test("shared catalog covers every static authenticated owner route", () => {
       .filter((step) => step.expectedPath && !step.expectedPath.includes(":"))
       .map((step) => step.expectedPath),
   );
-  assert.equal(catalog.routes.length, 26);
+  assert.equal(catalog.routes.length, 27);
   assert.deepEqual([...ownerPaths].sort(), [...catalogPaths].sort());
 });
 

@@ -356,6 +356,16 @@
           "minimumActions": 1
         },
         {
+          "id": "migration-assistant",
+          "type": "route-check",
+          "path": "/migration-assistant?desktop=true",
+          "expectedStatuses": [200],
+          "expectedPath": "/migration-assistant",
+          "requiredAny": ["move", "gorilladesk", "migration"],
+          "observe": "Find the migration depth, customer estimate, and secure-browser setup actions without starting a browser session or authorizing a scan.",
+          "minimumActions": 2
+        },
+        {
           "id": "ai-receptionist",
           "type": "route-check",
           "path": "/ai-receptionist?desktop=true",

@@ -74,7 +74,7 @@ target commit, result, evidence link, and next action.
 ## 5. Current foundation
 
 - Registry of PestFlow journeys, personas, viewports, policies, and change rules.
-- Shared 26-route owner readiness catalog.
+- Shared 27-route owner readiness catalog, including the Move-In Assistant.
 - Browserbase/Stagehand runner with read-only enforcement and evidence capture.
 - Exact-deployment preflight.
 - Four public GET-only outcome oracles.

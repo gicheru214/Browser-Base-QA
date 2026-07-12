@@ -124,6 +124,7 @@
         "server/routes/messages.ts",
         "server/routes/messaging.ts",
         "server/routes/message-responses.ts",
+        "server/routes/migration-assistant.ts",
         "server/routes/quickbooks.ts",
         "server/routes/sales.ts",
         "server/routes/sms-*.ts",

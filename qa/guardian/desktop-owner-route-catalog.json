@@ -24,6 +24,7 @@
     { "id": "sales-portal", "path": "/sales-portal?desktop=true", "expectedPath": "/sales-portal", "selector": "h1.pf-page-header-title", "heading": "Sales Portal" },
     { "id": "sales-portal-enroll", "path": "/sales-portal/enroll?desktop=true", "expectedPath": "/sales-portal/enroll", "selector": "h1", "heading": "New Customer Enrollment" },
     { "id": "website-chat", "path": "/website-chat?desktop=true", "expectedPath": "/website-chat", "selector": "h1.pf-page-header-title", "heading": "Website Chat" },
+    { "id": "migration-assistant", "path": "/migration-assistant?desktop=true", "expectedPath": "/migration-assistant", "selector": "h1", "heading": "Move from GorillaDesk" },
     { "id": "ai-receptionist", "path": "/ai-receptionist?desktop=true", "expectedPath": "/ai-receptionist", "selector": "h1.pf-page-header-title", "heading": "AI Receptionist" },
     { "id": "automations", "path": "/automations?desktop=true", "expectedPath": "/automations", "selector": "h1", "heading": "Automations" },
     { "id": "settings", "path": "/settings?desktop=true", "expectedPath": "/settings", "selector": "h1.pf-page-header-title", "heading": "Settings" }

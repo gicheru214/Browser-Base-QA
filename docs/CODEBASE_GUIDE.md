@@ -25,7 +25,7 @@ with the quality policy and returns pass, warning, or blocked.
 | File | What it does |
 | --- | --- |
 | `qa/guardian/desktop-journeys.json` | Defines personas, four desktop sizes, safe journeys, semantic expectations, and forbidden content. |
-| `qa/guardian/desktop-owner-route-catalog.json` | Defines the 26 owner routes and their stable readiness contracts. |
+| `qa/guardian/desktop-owner-route-catalog.json` | Defines the 27 owner routes and their stable readiness contracts. |
 | `qa/guardian/outcome-oracles.json` | Defines GET-only frontend, API, database, and schema checks. |
 | `qa/guardian/quality-policy.json` | Defines what evidence is required and what blocks release. |
 | `qa/guardian/change-map.json` | Maps PestFlow code areas to the journeys and deterministic suites they must trigger. |
