@@ -294,6 +294,12 @@ The next write-path layer covers equipment, preset notes, and chemical products:
 each resource is created, found in its list, blocked from cross-tenant mutation,
 updated, explicitly deleted, and proved absent. A focused production run passed
 all three lifecycles and completed 5/5 account/session/login-rejection cleanup.
+Provider-safe communication coverage now proves an unsigned recipient-free
+service document, response-template archive, disabled auto-response rule,
+same-company team-message read state, cross-company isolation, and notification
+preference restore. It cannot sign, email, text, enable the rule, charge, or call
+an external provider. The focused live run passed and again removed all five
+accounts.
 
 A state-changing journey is green only when all required layers agree. For an
 invoice send, that can include UI completion, API response, invoice row, correct
@@ -497,3 +503,6 @@ were deleted with session clearing and credential rejection proved.
 The focused owner-resource lifecycle then passed equipment, preset notes, and
 chemical products against production in 2.4 minutes, with all five disposable
 accounts again fully removed and rejected at sign-in.
+The subsequent provider-safe document/internal-communications lifecycle also
+passed in 2.4 minutes, with response records cleaned, preferences restored, and
+5/5 account/session/login-rejection teardown proved.
