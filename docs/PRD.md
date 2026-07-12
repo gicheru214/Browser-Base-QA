@@ -309,6 +309,23 @@ customer, technician, and equipment row to belong to the caller company before
 insert. Six route tests pass. The production regression deliberately remains red
 until the reviewed repair is deployed and returns 404 for both attempts.
 
+The fix is defense-in-depth, not route-only. Migration
+`a24_operational_tenant_integrity.sql` adds six composite company/reference
+foreign keys for chemical logs and job-equipment usage. They are installed as
+`NOT VALID`: PostgreSQL rejects every new mismatched relationship immediately,
+while the system preserves pre-existing rows for separately reviewed repair.
+The public schema oracle requires all six constraint names, so a migration that
+is logged but skipped cannot produce a green release verdict.
+
+An explicit aggregate-only production audit runs inside a database-enforced
+read-only transaction. It returns counts and timestamps, never row IDs, names,
+emails, addresses, chemical names, or notes. The first audit found zero
+job-equipment mismatches and three historical chemical-log/product mismatches
+among 94 logs. Those three non-QA records share one company pair and one creation
+timestamp, involve different owners and company names, and have no same-name
+replacement product in the log-owning company. No historical data was changed;
+review and repair require a separate authorized workflow.
+
 A state-changing journey is green only when all required layers agree. For an
 invoice send, that can include UI completion, API response, invoice row, correct
 customer and billing type, delivery audit, provider acceptance, correct PDF, and
@@ -520,3 +537,10 @@ runs removed the temporary equipment association where possible and each proved
 5/5 account deletion, session clearing, and sign-in rejection. Branch unit,
 TypeScript, and lint proof is green; production certification is red pending
 deployment and a 404/404 rerun.
+The follow-up read-only database inventory confirmed that job-equipment history
+currently has zero cross-company relationships, but three non-QA chemical logs
+reference a product owned by a different company. Because all three share one
+pair and the exact same May 27 timestamp, the evidence is consistent with a
+single historical batch/import event, but that is an inference rather than a
+proven cause. The branch prevents recurrence at both API and database layers and
+keeps cleanup outside this PR until the affected business records are reviewed.
