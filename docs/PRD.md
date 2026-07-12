@@ -301,6 +301,14 @@ preference restore. It cannot sign, email, text, enable the rule, charge, or cal
 an external provider. The focused live run passed and again removed all five
 accounts.
 
+Operational inventory testing then exposed a critical tenant-integrity defect in
+the currently deployed API: a second disposable owner could associate the first
+owner's job/equipment and job/customer UUIDs, and both POST requests returned
+200. The branch repair validates UUIDs and requires every referenced job,
+customer, technician, and equipment row to belong to the caller company before
+insert. Six route tests pass. The production regression deliberately remains red
+until the reviewed repair is deployed and returns 404 for both attempts.
+
 A state-changing journey is green only when all required layers agree. For an
 invoice send, that can include UI completion, API response, invoice row, correct
 customer and billing type, delivery audit, provider acceptance, correct PDF, and
@@ -506,3 +514,9 @@ accounts again fully removed and rejected at sign-in.
 The subsequent provider-safe document/internal-communications lifecycle also
 passed in 2.4 minutes, with response records cleaned, preferences restored, and
 5/5 account/session/login-rejection teardown proved.
+The operational-inventory production test then confirmed both cross-company
+write attempts return 200 on the current deployment. Two controlled discovery
+runs removed the temporary equipment association where possible and each proved
+5/5 account deletion, session clearing, and sign-in rejection. Branch unit,
+TypeScript, and lint proof is green; production certification is red pending
+deployment and a 404/404 rerun.
