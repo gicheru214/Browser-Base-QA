@@ -1,3 +1,8 @@
+import {
+  ADAPTIVE_ACTION_PROOF_CONTRACT,
+  validateAdaptiveActionProof,
+} from "./qa-adaptive-action-proof.mjs";
+
 const DEFAULT_FORBIDDEN = [
   "delete",
   "remove account",
@@ -25,6 +30,9 @@ function includesAny(value, patterns = []) {
 export function validateGuardianRegistry(registry) {
   const errors = [];
   if (registry?.schemaVersion !== 1) errors.push("schemaVersion must be 1");
+  if (registry?.executionContract !== ADAPTIVE_ACTION_PROOF_CONTRACT) {
+    errors.push(`executionContract must be ${ADAPTIVE_ACTION_PROOF_CONTRACT}`);
+  }
   if (!registry?.defaultBaseUrl) errors.push("defaultBaseUrl is required");
   if (!registry?.devices || !Object.keys(registry.devices).length) errors.push("at least one device is required");
   if (!registry?.personas || !Object.keys(registry.personas).length) errors.push("at least one persona is required");
@@ -55,6 +63,12 @@ export function validateGuardianRegistry(registry) {
       }
       if (["extract", "observe", "act"].includes(step.type) && !step.instruction) {
         errors.push(`${journey.id}/${step.id}: instruction is required`);
+      }
+      if (step.type === "act") {
+        errors.push(...validateAdaptiveActionProof(step.proof, {
+          label: `${journey.id}/${step.id}.proof`,
+          writePolicy: journey.writePolicy,
+        }));
       }
     }
   }

@@ -136,6 +136,7 @@ fingerprint from customer-relevant evidence.
 | File | Responsibility |
 |---|---|
 | `scripts/qa-guardian-stagehand.mjs` | Main Browserbase/Stagehand runner. Loads the registry, validates filters, verifies deployed SHA, creates isolated sessions, applies policy, records screenshots/console/history/metrics/replay URLs, and writes the summary. |
+| `scripts/lib/qa-adaptive-action-proof.mjs` | Enforces Adaptive Action → Deterministic Proof (AADP): every future Stagehand `act` must declare Playwright/backend proof for its URL, visible state, HTTP/API outcome, console, and network result. |
 | `scripts/qa-deployment-preflight.mjs` | Standalone candidate-release preflight. It verifies the deployed SHA before any selected deterministic or semantic suite and writes auditable JSON evidence. |
 | `scripts/qa-guardian-select.mjs` | CLI used by CI to calculate risk-based coverage and write `selection.json` plus GitHub outputs. |
 | `scripts/qa-outcome-oracles.mjs` | Runs the public GET-only frontend/API/DB/schema oracles and writes sanitized release evidence. |
@@ -151,6 +152,7 @@ fingerprint from customer-relevant evidence.
 | `scripts/qa-browser-evidence.test.mjs` | First-party API/asset failures, expected auth responses, analytics/abort noise, redaction, and page-error filtering. |
 | `scripts/qa-outcome-oracles.test.mjs` | Registry safety, GET enforcement, origin pinning, JSON assertions, timestamp freshness, SHA matching, and body non-retention. |
 | `scripts/qa-release-verdict.test.mjs` | Green, missing Browserbase, missing/skipped evidence, hydration, and delegated-suite gate cases. |
+| `test/adaptive-action-proof.test.mjs` | Locks AADP proof validation, success evidence, console failure behavior, registry fail-closed enforcement, and write-action system-of-record requirements. |
 | `scripts/qa-failure-classifier.test.mjs` | Product versus infrastructure classification and fingerprint stability. |
 | `scripts/qa-build-incident.integration.test.mjs` | End-to-end incident packaging from realistic workflow artifacts and metadata. |
 | `src/test/companyReferences.test.ts` | Locks malformed-ID rejection, company ownership, parent/customer consistency, normalized persistence IDs, and route wiring for the shared validator. |

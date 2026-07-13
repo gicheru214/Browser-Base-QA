@@ -41,6 +41,7 @@ with the quality policy and returns pass, warning, or blocked.
 | `scripts/qa-guardian-stagehand.mjs` | Creates isolated Browserbase sessions, runs Stagehand, enforces read-only policy, records evidence, and writes the browser summary. |
 | `scripts/lib/qa-owner-api-contracts.mjs` | Validates and executes all owner API contracts inside the authenticated browser session, retaining only status/schema/timing metadata. |
 | `scripts/lib/qa-guardian-policy.mjs` | Validates the registry, navigation, semantic results, and proposed browser actions. Stagehand cannot override it. |
+| `scripts/lib/qa-adaptive-action-proof.mjs` | Implements Adaptive Action → Deterministic Proof (AADP). It validates every future Stagehand action's required Playwright proof and verifies URL, visible state, response metadata, API contracts, console, and network outcomes. |
 | `scripts/lib/qa-browser-evidence.mjs` | Separates customer-critical console/network failures from known browser or third-party noise and redacts sensitive URL data. |
 | `scripts/lib/qa-deployment-preflight.mjs` | Waits for the expected PestFlow commit to appear at the deployed health endpoint so the wrong build cannot receive a false pass. |
 | `scripts/qa-outcome-oracles.mjs` | Runs the public GET-only service and schema checks without retaining response bodies. |
@@ -55,6 +56,17 @@ Authenticated contexts must belong to isolated QA tenants. Evidence artifacts
 must not contain passwords, tokens, customer page content, or raw API bodies.
 The owner API executor parses responses inside the browser and returns only
 status, content type, duration, top-level key names, and declared array counts.
+
+## Adaptive Action → Deterministic Proof (AADP)
+
+Stagehand is the adaptive operator; Playwright is the deterministic proof layer.
+Every registry step with `type: "act"` must declare `proof`. The registry is
+invalid before any browser opens when that proof is missing or malformed. After
+the allowlisted action executes, the runner immediately checks the declared URL,
+visible/value state, first-party response status, optional read-only API contract,
+and critical console/network limits. A write-enabled QA-tenant journey must include
+HTTP response or API system-of-record proof. The stored evidence contains proof
+metadata but no response body or customer record content.
 
 ## Adding coverage
 

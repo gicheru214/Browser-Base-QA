@@ -18,6 +18,11 @@ import {
   selectCriticalPageErrors,
 } from "./lib/qa-browser-evidence.mjs";
 import {
+  ADAPTIVE_ACTION_PROOF_CONTRACT,
+  validateAdaptiveActionProof,
+  verifyAdaptiveActionProof,
+} from "./lib/qa-adaptive-action-proof.mjs";
+import {
   runOwnerApiContracts,
   validateOwnerApiContractCatalog,
 } from "./lib/qa-owner-api-contracts.mjs";
@@ -168,6 +173,11 @@ async function executeStep(context) {
   if (step.type === "extract") return extractStep(context);
   if (step.type === "observe") return observeStep(context);
   if (step.type === "act") {
+    const proofErrors = validateAdaptiveActionProof(step.proof, {
+      label: `${context.journey.id}/${step.id}.proof`,
+      writePolicy: context.journey.writePolicy,
+    });
+    if (proofErrors.length) throw new Error(proofErrors.join("; "));
     const actions = await context.stagehand.observe(step.instruction, { page: context.page, serverCache: false, timeout: 45_000 });
     if (!actions.length) throw new Error("Stagehand did not propose an action");
     const action = actions[0];
@@ -177,7 +187,31 @@ async function executeStep(context) {
       registry: context.registry,
       allowWrites: process.env.QA_GUARDIAN_ALLOW_WRITES === "1",
     });
-    return context.stagehand.act(action, { page: context.page, serverCache: false, timeout: 45_000 });
+    const responseStart = context.httpResponses.length;
+    const consoleStart = context.consoleErrors.length;
+    const networkStart = context.networkFailures.length;
+    await context.stagehand.act(action, { page: context.page, serverCache: false, timeout: 45_000 });
+    const criticalNetworkFailures = selectCriticalNetworkFailures(context.networkFailures.slice(networkStart), {
+      baseUrls: [context.baseUrl, context.apiUrl],
+    });
+    const proof = await verifyAdaptiveActionProof({
+      page: context.page,
+      proof: step.proof,
+      baseUrl: context.baseUrl,
+      apiUrl: context.apiUrl,
+      httpResponses: context.httpResponses.slice(responseStart),
+      consoleErrors: context.consoleErrors.slice(consoleStart),
+      criticalNetworkFailures,
+    });
+    return {
+      contract: ADAPTIVE_ACTION_PROOF_CONTRACT,
+      adaptiveAction: {
+        description: action.description,
+        method: action.method,
+        selector: action.selector,
+      },
+      deterministicProof: proof,
+    };
   }
   if (step.type === "route-check") {
     const navigation = await navigateStep(context);
@@ -219,6 +253,7 @@ async function runMatrixEntry({
 
   const stagehandLogs = [];
   const consoleErrors = [];
+  const httpResponses = [];
   const networkFailures = [];
   const pageErrors = [];
   const stepResults = [];
@@ -284,8 +319,18 @@ async function runMatrixEntry({
     });
     page.on("response", (response) => {
       try {
-        if (response.status() < 400) return;
         const request = response.request();
+        const responseUrl = new URL(response.url());
+        const allowedOrigins = new Set([new URL(baseUrl).origin, new URL(apiUrl).origin]);
+        if (allowedOrigins.has(responseUrl.origin)) {
+          httpResponses.push({
+            method: request.method(),
+            path: responseUrl.pathname,
+            status: response.status(),
+            timestamp: new Date().toISOString(),
+          });
+        }
+        if (response.status() < 400) return;
         networkFailures.push(sanitizeNetworkFailure({
           kind: "response",
           url: response.url(),
@@ -317,7 +362,18 @@ async function runMatrixEntry({
     for (const step of journey.steps) {
       const startedAt = new Date().toISOString();
       try {
-        const output = await executeStep({ stagehand, page, step, journey, registry, baseUrl });
+        const output = await executeStep({
+          stagehand,
+          page,
+          step,
+          journey,
+          registry,
+          baseUrl,
+          apiUrl,
+          httpResponses,
+          consoleErrors,
+          networkFailures,
+        });
         const screenshot = await captureScreenshot(page, outputDir, step.id);
         stepResults.push({ id: step.id, type: step.type, status: "passed", startedAt, completedAt: new Date().toISOString(), screenshot, output });
       } catch (error) {

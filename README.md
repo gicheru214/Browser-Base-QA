@@ -24,6 +24,13 @@ very strict customer and release inspector standing outside it.
 9. Applies one release policy. Missing evidence blocks the release; infrastructure
    trouble is reported separately from a PestFlow product failure.
 
+Every future Stagehand action follows **Adaptive Action → Deterministic Proof
+(AADP)**. Stagehand may locate and operate a changing control, but that action
+cannot pass until Playwright proves the declared URL, visible/value state, HTTP
+response or follow-up API contract, plus the allowed console and network error
+budgets. Write-enabled QA actions require an HTTP or API system-of-record proof;
+a success toast alone is never enough.
+
 ## Why Stagehand and Playwright are both here
 
 They are complementary layers in one test journey, not duplicate test suites.

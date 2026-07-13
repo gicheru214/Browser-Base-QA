@@ -253,6 +253,29 @@ runner validates the proposed method, target, destination, arguments, journey
 allowlist, environment, and write policy. A semantic recovery is logged; it does
 not silently rewrite the canonical test.
 
+### Adaptive Action → Deterministic Proof (AADP)
+
+AADP is the mandatory handoff between adaptable UI operation and release-grade
+proof. Stagehand may find and operate changing UI such as “open the customer,”
+“find New Job,” or “locate the invoice total.” The action is not a pass. The
+runner immediately requires Playwright and the declared backend contracts to
+prove the objective result.
+
+Every registry step with `type: "act"` must declare a deterministic `proof`
+contract before the registry is valid. Supported proof signals are:
+
+- exact or prefix-matched same-origin URL;
+- visible selector plus optional exact/contained text or value;
+- first-party HTTP method, path, and allowed response status;
+- follow-up authenticated, GET-only API shape contract for persisted state;
+- maximum critical console errors and first-party network failures.
+
+Write-enabled QA-tenant actions must include HTTP response or follow-up API
+system-of-record proof. A toast, semantic summary, screenshot, or Stagehand's own
+success response cannot independently certify the business outcome. Missing,
+malformed, skipped, or failed proof blocks that journey and therefore the release
+when the journey is required.
+
 ### Exploratory mode
 
 Nightly read-only exploration inventories visible actions, dead routes, blank

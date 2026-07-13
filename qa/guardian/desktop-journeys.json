@@ -1,5 +1,6 @@
 {
   "schemaVersion": 1,
+  "executionContract": "adaptive-action-deterministic-proof",
   "suite": "PestFlow Desktop Guardian",
   "defaultBaseUrl": "https://new.pestflow.org",
   "devices": {
