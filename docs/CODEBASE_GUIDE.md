@@ -11,6 +11,8 @@ with the quality policy and returns pass, warning, or blocked.
 
 | Path | Purpose |
 | --- | --- |
+| `bin/` | The single `browser-base-qa` command that delegates to the guarded QA programs. |
+| `dashboard/` | Local, responsive Command Center UI. It displays normalized artifact data and never runs tests or changes PestFlow. |
 | `qa/guardian/` | PestFlow journey, route, authenticated API, device, change, oracle, and release-policy definitions. This is the source of truth for coverage. |
 | `scripts/` | Executable QA programs: Browserbase/Stagehand runner, public outcome-oracle runner, change selector, and release verdict. |
 | `scripts/lib/` | Pure policy, evidence filtering, deployment-preflight, oracle, and verdict logic used by the commands and tests. |
@@ -24,6 +26,12 @@ with the quality policy and returns pass, warning, or blocked.
 
 | File | What it does |
 | --- | --- |
+| `bin/browser-base-qa.mjs` | Stable CLI entry point for `list`, `plan`, `run`, `oracles`, `verdict`, and `dashboard`. It preserves the delegated command exit code. |
+| `scripts/qa-dashboard-server.mjs` | Dependency-free, localhost-only dashboard server with a read-only normalized JSON endpoint and strict browser security headers. |
+| `scripts/lib/qa-dashboard-model.mjs` | Combines registries and run artifacts into the safe dashboard view model; redacts secret-like text and allows only Browserbase replay URLs. |
+| `dashboard/index.html` | Command Center structure and accessible release/coverage sections. |
+| `dashboard/app.js` | Polls the read-only dashboard endpoint and renders evidence using DOM text nodes rather than injecting artifact HTML. |
+| `dashboard/styles.css` | Responsive visual system for desktop, tablet, and mobile dashboard layouts. |
 | `qa/guardian/desktop-journeys.json` | Defines personas, four desktop sizes, safe journeys, semantic expectations, and forbidden content. |
 | `qa/guardian/desktop-owner-route-catalog.json` | Defines the 27 owner routes and their stable readiness contracts. |
 | `qa/guardian/desktop-owner-api-contracts.json` | Defines 32 authenticated owner GET contracts, required JSON keys, and required array shapes. |
@@ -54,3 +62,12 @@ Add or change the route/journey contract, add a policy test, run `npm test` and
 `npm run guardian:dry-run`, then perform a recorded run. A discovered production
 bug belongs in the incident tracker and must become a deterministic application
 regression test plus the appropriate outside-in journey before it is closed.
+
+## Command and dashboard flow
+
+`browser-base-qa run` writes evidence beneath `artifacts/qa-guardian`.
+`browser-base-qa oracles` and `browser-base-qa verdict` add their own normalized
+JSON to the same folder. `browser-base-qa dashboard` starts a localhost-only UI
+that reads those files and the source registries every 15 seconds. The dashboard
+is deliberately read-only: a refresh reads newer evidence but never launches a
+browser, retries a test, changes a verdict, or writes to PestFlow.

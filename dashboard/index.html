@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Browser Base QA reliability dashboard for PestFlow" />
+    <title>Browser Base QA</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="/" aria-label="Browser Base QA home">
+        <span class="brand-mark" aria-hidden="true">B</span>
+        <span><strong>Browser Base QA</strong><small>PestFlow Reliability Command Center</small></span>
+      </a>
+      <div class="topbar-actions">
+        <span class="live-indicator"><i></i> Artifact feed</span>
+        <button id="refresh-button" class="button" type="button">Refresh evidence</button>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero" aria-labelledby="page-title">
+        <div>
+          <p class="eyebrow">Release command center</p>
+          <h1 id="page-title">Know if PestFlow is safe to ship.</h1>
+          <p class="hero-copy">One verdict built from deterministic checks, adaptive browser journeys, and production outcome evidence.</p>
+        </div>
+        <div id="readiness-card" class="readiness-card is-loading" aria-live="polite">
+          <span class="status-dot"></span>
+          <div><small>Release readiness</small><strong id="readiness-status">Loading evidence…</strong></div>
+        </div>
+      </section>
+
+      <section id="attention-panel" class="attention-panel" aria-labelledby="attention-title" hidden>
+        <div class="attention-icon" aria-hidden="true">!</div>
+        <div><p class="eyebrow">Needs attention</p><h2 id="attention-title">Release blockers</h2><ul id="blocker-list"></ul></div>
+      </section>
+
+      <section aria-labelledby="coverage-title">
+        <div class="section-heading">
+          <div><p class="eyebrow">At a glance</p><h2 id="coverage-title">Coverage and latest evidence</h2></div>
+          <p id="last-updated" class="muted">Waiting for artifacts…</p>
+        </div>
+        <div id="metric-grid" class="metric-grid" aria-live="polite"></div>
+      </section>
+
+      <section class="two-column">
+        <article class="panel" aria-labelledby="journeys-title">
+          <div class="panel-heading"><div><p class="eyebrow">Latest run</p><h2 id="journeys-title">Browser journeys</h2></div><span id="run-id" class="chip">No run</span></div>
+          <div id="journey-list" class="result-list"><p class="empty-state">No Guardian evidence has been written yet.</p></div>
+        </article>
+
+        <article class="panel" aria-labelledby="oracles-title">
+          <div class="panel-heading"><div><p class="eyebrow">Production truth</p><h2 id="oracles-title">Outcome oracles</h2></div><span id="oracle-status" class="chip">Not run</span></div>
+          <div id="oracle-list" class="result-list"><p class="empty-state">Run the oracle command to populate production evidence.</p></div>
+        </article>
+      </section>
+
+      <section class="panel" aria-labelledby="registry-title">
+        <div class="panel-heading"><div><p class="eyebrow">Source controlled</p><h2 id="registry-title">Journey registry</h2></div><span id="registry-count" class="chip">0 journeys</span></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Journey</th><th>Risk tier</th><th>Persona</th><th>Policy</th><th>Devices</th><th>Steps</th></tr></thead>
+            <tbody id="registry-body"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <footer><span>Evidence refreshes every 15 seconds.</span><code>browser-base-qa dashboard</code></footer>
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>

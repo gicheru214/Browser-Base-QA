@@ -55,11 +55,24 @@ green result before promotion.
 
 ```bash
 npm install
-cp .env.example .env
-npm run audit
-npm test
-npm run guardian:dry-run
+node bin/browser-base-qa.mjs --help
+node bin/browser-base-qa.mjs list --tier=1
+node bin/browser-base-qa.mjs run --dry-run --tier=1
+node bin/browser-base-qa.mjs dashboard
 ```
+
+When installed as a package or linked with `npm link`, use the shorter executable:
+
+```bash
+browser-base-qa run --tier=0
+browser-base-qa dashboard --port=4174
+```
+
+The dashboard is not a second test system. It reads the same source-controlled
+registries and `artifacts/qa-guardian/*.json` evidence produced by the CLI. The
+current local foundation shows release readiness, blockers, coverage, Guardian
+journeys, production oracles, replay links, and the journey registry; it refreshes
+without rerunning or mutating QA.
 
 For a live recorded run, configure the Browserbase secrets and a dedicated,
 non-customer PestFlow QA owner context, then run:

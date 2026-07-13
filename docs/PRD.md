@@ -176,7 +176,10 @@ permissions with another persona.
 
 ## 4. Command Center information architecture
 
-The future owner-only dashboard should provide:
+The artifact-backed local dashboard now provides release readiness, current
+blockers, registry counts, latest Guardian results, production oracles,
+Browserbase replay links, and the source-controlled journey registry. The full
+hosted owner-only Command Center should expand that foundation with:
 
 - **Release Readiness:** exact commit, required checks, passes, blocks, and gaps.
 - **Test Registry:** every journey, owner, risk, schedule, devices, and oracles.
@@ -510,10 +513,12 @@ rate, and Browserbase sessions/cost per release.
 7. **Guarded healing:** staging reproduction, regression enforcement, trust levels.
 
 The current branch substantially implements phases 1–3, the desktop release
-shield foundation, public frontend/API/database/schema outcome oracles, and a
-self-cleaning deterministic production fixture lifecycle. It
-does not claim the durable dashboard, every persona, authenticated write/delivery
-oracles, or full autonomous repair lifecycle is complete.
+shield foundation, public frontend/API/database/schema outcome oracles, a
+self-cleaning deterministic production fixture lifecycle, a unified CLI, and a
+read-only artifact-backed local dashboard. It does not claim the durable hosted
+data service, owner authentication, live queue control, every persona,
+authenticated write/delivery oracles, or full autonomous repair lifecycle is
+complete.
 
 The reusable outside-in portion is published in the separate public
 `gicheru214/Browser-Base-QA` repository with `yawbtng` as a write collaborator

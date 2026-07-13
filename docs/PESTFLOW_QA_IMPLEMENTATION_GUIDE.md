@@ -567,9 +567,16 @@ application-specific health metadata, fixture lifecycle, regression tests, and
 product fixes. The external repository can be called as a reusable release gate
 and is the collaboration surface for `yawbtng`.
 
+That repository now exposes one `browser-base-qa` CLI for listing, planning,
+running, checking oracles, calculating the verdict, and starting the dashboard.
+Its local Command Center reads the exact JSON artifacts produced by those
+commands and displays readiness, blockers, coverage, journey results, production
+oracles, Browserbase replays, and the source registry without triggering tests or
+mutating PestFlow.
+
 ### Planned Command Center expansion
 
-- durable QA database and owner-only dashboard;
+- durable QA database, hosted owner authentication, and historical run API behind the local dashboard foundation;
 - complete Browserbase persona contexts and safe fixtures for future write journeys;
 - authenticated row/delivery/provider oracles for future write journeys;
 - customer bug intake and observability correlation;
