@@ -309,12 +309,15 @@ customer, technician, and equipment row to belong to the caller company before
 insert. Six route tests pass. The production regression deliberately remains red
 until the reviewed repair is deployed and returns 404 for both attempts.
 
-The fix is defense-in-depth, not route-only. Migration
-`a24_operational_tenant_integrity.sql` adds six composite company/reference
-foreign keys for chemical logs and job-equipment usage. They are installed as
+The fix is defense-in-depth, not route-only. A shared typed validator now protects
+job customer/location/technician assignment, invoice customer/job assignment,
+customer notes, service agreements, service documents, and customer contracts in
+addition to the original chemical-log and equipment-use routes. Migration
+`a24_operational_tenant_integrity.sql` adds seventeen composite company/reference
+foreign keys across those core and operational records. They are installed as
 `NOT VALID`: PostgreSQL rejects every new mismatched relationship immediately,
 while the system preserves pre-existing rows for separately reviewed repair.
-The public schema oracle requires all six constraint names, so a migration that
+The public schema oracle requires all seventeen constraint names, so a migration that
 is logged but skipped cannot produce a green release verdict.
 
 An explicit aggregate-only production audit runs inside a database-enforced
@@ -325,6 +328,13 @@ among 94 logs. Those three non-QA records share one company pair and one creatio
 timestamp, involve different owners and company names, and have no same-name
 replacement product in the log-owning company. No historical data was changed;
 review and repair require a separate authorized workflow.
+
+The expanded audit also inspected 453 populated core references across jobs,
+invoices, notes, agreements, service documents, and customer contracts. All had
+the same company as their parent row. Twenty-nine records with paired
+job/customer references were also internally consistent. The absence of existing
+core mismatches makes the new constraints preventative rather than a silent data
+rewrite.
 
 A state-changing journey is green only when all required layers agree. For an
 invoice send, that can include UI completion, API response, invoice row, correct
