@@ -59,8 +59,11 @@ and business regressions remain beside PestFlow application code. The recorded
 Browserbase owner session runs the external contract once per Guardian run and
 stores no response bodies.
 
-Current reviewed head `a9c9e66` on PestFlow PR #89 adds provider/field tenant
+Current reviewed head `36e7ab7` on PestFlow PR #89 adds provider/field tenant
 validation, nine database constraints, the missing ProGlove schema migration,
 and eight focused provider/field regressions. Its aggregate-only production
 inventory inspected 536 populated references and 259 paired relationships with
 zero mismatches and without sending email, SMS, invitations, or signatures.
+It also makes the 28-email preview endpoint unavailable in production and gives
+the intentional Stripe test-send server-verified confirmation plus a ten-minute
+operation-specific idempotency window.

@@ -351,6 +351,16 @@ document/job-to-customer relationships. Every relationship was company-scoped an
 internally consistent. The audit was database-enforced read-only and no email,
 text, invitation, signature, or other provider action was triggered.
 
+A separate provider-side-effect sweep found two diagnostic surfaces that were
+too easy to trigger: the staging feature-email proof could schedule all 28
+templates on a production service, and the Stripe connectivity button could
+create duplicate real $1 test invoices after a retry or double-click. The email
+batch now returns 404 in production. The Stripe diagnostic requires a second
+human confirmation that the server independently verifies, and every Stripe
+mutation uses an operation-specific idempotency key in a ten-minute window.
+This preserves intentional owner testing without turning retries into duplicate
+customers, invoices, line items, finalizations, or sends.
+
 A state-changing journey is green only when all required layers agree. For an
 invoice send, that can include UI completion, API response, invoice row, correct
 customer and billing type, delivery audit, provider acceptance, correct PDF, and

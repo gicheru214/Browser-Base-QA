@@ -156,6 +156,7 @@ fingerprint from customer-relevant evidence.
 | `src/test/companyReferences.test.ts` | Locks malformed-ID rejection, company ownership, parent/customer consistency, normalized persistence IDs, and route wiring for the shared validator. |
 | `src/test/coreTenantWriteRoutes.test.ts` | Proves six core desktop write routes return 404 before persistence when supplied references belong outside the authenticated company. |
 | `src/test/remainingTenantWriteRoutes.test.ts` | Proves scheduled SMS, trap scans, team/portal invites, and signing emails reject foreign references or unauthorized recipients before persistence or provider delivery. |
+| `src/test/providerDiagnosticSafety.test.ts` | Locks the Stripe diagnostic confirmation, ten-minute operation-specific idempotency, and confirmation wiring in every desktop/mobile caller. |
 | `scripts/desktop-critical-report.mjs` | Aggregates deterministic desktop results and API health into report artifacts. |
 | `scripts/desktop-critical-notify.mjs` | Formats/sends desktop critical workflow notification evidence. |
 | `scripts/run-staging-features-qa.mjs` | Runs broader staging feature coverage and records Railway health. |
@@ -272,7 +273,7 @@ first-attempt failures remain in the session evidence.
 | `server/routes/chemical-logs.ts` | Rejects cross-company or invalid customer/technician/job references before recording regulated application history. |
 | `server/lib/companyReferences.ts` | Shared UUID, company-ownership, and parent/customer consistency validator for core desktop writes. |
 | `server/routes/jobs.ts` | Validates customer, location, technician, and location/customer consistency before job creation or reassignment. |
-| `server/routes/invoices.ts` | Validates customer/job ownership and job/customer consistency before invoice creation. |
+| `server/routes/invoices.ts` | Validates customer/job ownership and job/customer consistency before invoice creation; the real Stripe test-send requires explicit confirmation and operation-specific ten-minute idempotency. |
 | `server/routes/customer-notes.ts` | Validates customer/job ownership and their relationship before adding a note. |
 | `server/routes/service-agreements.ts` | Validates the agreement customer before persistence. |
 | `server/routes/service-documents.ts` | Validates customer and invoice ownership before document creation or linkage. |
@@ -281,11 +282,13 @@ first-attempt failures remain in the session evidence.
 | `server/routes/proglove.ts` | Validates optional job/customer/technician ownership before recording a field scan. |
 | `server/routes/invites.ts` | Validates supplied technician and optional customer ledger references before invite or portal-provider work. |
 | `server/routes/messaging.ts` | Requires an owned document/customer and matching recipient before contract-signing email can reach Resend. |
+| `server/routes/feature-actions.ts` | Sends owner-facing feature-action receipts; its 28-email staging proof endpoint fails closed with 404 in production. |
 | `src/test/companyBranchesRoute.test.ts` | Locks route ordering, company isolation, name validation, creation, and primary-branch protection. |
 | `src/test/operationalInventoryTenantScope.test.ts` | Locks UUID validation and tenant ownership for equipment-use and chemical-application writes. |
 | `src/test/companyReferences.test.ts` | Locks the reusable core reference validator and its audited route inventory. |
 | `src/test/coreTenantWriteRoutes.test.ts` | Locks foreign-reference rejection across notes, jobs, invoices, agreements, documents, and contracts. |
 | `src/test/remainingTenantWriteRoutes.test.ts` | Locks provider/field rejection and proves external delivery is not reached for unauthorized input. |
+| `src/test/providerDiagnosticSafety.test.ts` | Locks production bulk-preview denial and Stripe diagnostic confirmation/idempotency across all callers. |
 | `src/test/desktopAppLayoutContract.test.ts` | Locks the title fallback and both previously crashing feature titles. |
 
 The disposable cloud browser may receive two first-run local onboarding dialogs

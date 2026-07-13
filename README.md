@@ -80,11 +80,13 @@ all five temporary accounts were deleted and login rejection was verified. The
 repair remains on PestFlow's reviewed QA branch until deployment is authorized.
 That branch now also protects scheduled SMS, signing email, team/portal invites,
 and ProGlove scans before any provider call or persistence. Its exact head is
-`a9c9e66` on PR #89. The complete local gate passed 794 unit tests, 48 Guardian
+`36e7ab7` on PR #89. The complete local gate passed 798 unit tests, 48 Guardian
 policy tests, 16 incident tests, TypeScript, lint, and the production build. The
 read-only production inventory found zero mismatches across 536 provider/field
 references and 259 paired relationships. Production is not certified until the
 reviewed branch deploys and all 26 database constraints appear in `/health/schema`.
+The same head also removes the production 28-email preview surface and makes the
+real Stripe test-send require confirmation plus ten-minute provider idempotency.
 
 ## Documentation
 
