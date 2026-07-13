@@ -314,10 +314,19 @@ job customer/location/technician assignment, invoice customer/job assignment,
 customer notes, service agreements, service documents, and customer contracts in
 addition to the original chemical-log and equipment-use routes. Migration
 `a24_operational_tenant_integrity.sql` adds seventeen composite company/reference
-foreign keys across those core and operational records. They are installed as
+foreign keys across those core and operational records.
+
+The next source audit extended that same boundary to scheduled SMS, ProGlove trap
+scans, technician invites, contract-signing email, and optional commercial-portal
+customer ledgers. These routes now reject malformed, foreign, or internally
+inconsistent references before a write or provider call. Signing email also
+requires the recipient to match the company-owned customer or document. Migration
+`a25_provider_field_tenant_integrity.sql` owns the previously unreproducible
+ProGlove table and adds nine more composite foreign keys. All 26 constraints are
+installed as
 `NOT VALID`: PostgreSQL rejects every new mismatched relationship immediately,
 while the system preserves pre-existing rows for separately reviewed repair.
-The public schema oracle requires all seventeen constraint names, so a migration that
+The public schema oracle requires all 26 constraint names, so a migration that
 is logged but skipped cannot produce a green release verdict.
 
 An explicit aggregate-only production audit runs inside a database-enforced
@@ -335,6 +344,12 @@ the same company as their parent row. Twenty-nine records with paired
 job/customer references were also internally consistent. The absence of existing
 core mismatches makes the new constraints preventative rather than a silent data
 rewrite.
+
+The provider/field audit then inspected 536 populated references in notification
+email, scheduled SMS, invite, and ProGlove records plus 259 paired
+document/job-to-customer relationships. Every relationship was company-scoped and
+internally consistent. The audit was database-enforced read-only and no email,
+text, invitation, signature, or other provider action was triggered.
 
 A state-changing journey is green only when all required layers agree. For an
 invoice send, that can include UI completion, API response, invoice row, correct

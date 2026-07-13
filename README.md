@@ -78,10 +78,18 @@ by six local policy tests. PestFlow's first equivalent synthetic-tenant producti
 sweep passed 31/32 and reproduced the already-known `/companies/branches` 500;
 all five temporary accounts were deleted and login rejection was verified. The
 repair remains on PestFlow's reviewed QA branch until deployment is authorized.
+That branch now also protects scheduled SMS, signing email, team/portal invites,
+and ProGlove scans before any provider call or persistence. Its exact head is
+`a9c9e66` on PR #89. The complete local gate passed 794 unit tests, 48 Guardian
+policy tests, 16 incident tests, TypeScript, lint, and the production build. The
+read-only production inventory found zero mismatches across 536 provider/field
+references and 259 paired relationships. Production is not certified until the
+reviewed branch deploys and all 26 database constraints appear in `/health/schema`.
 
 ## Documentation
 
 - [Product requirements](docs/PRD.md)
 - [Codebase and folder guide](docs/CODEBASE_GUIDE.md)
+- [PestFlow QA implementation guide](docs/PESTFLOW_QA_IMPLEMENTATION_GUIDE.md)
 - [PestFlow integration](docs/PESTFLOW_INTEGRATION.md)
 - [Activity tracker](tracker/Browser-Base-QA-Activity-Tracker.xlsx)

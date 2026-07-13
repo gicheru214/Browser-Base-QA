@@ -15,6 +15,8 @@ isolated QA fixture lifecycle, and focused unit/integration/browser regressions.
 - `GET /health` on the API returns service identity and deployed commit SHA.
 - `GET /health/db` proves the configured database is reachable and current.
 - `GET /health/schema` proves critical production tables and columns exist.
+- `GET /health/schema` proves all 26 core, operational, provider, and field
+  tenant-reference constraints exist before promotion.
 - A dedicated Browserbase context logs into a disposable PestFlow QA company.
 - The authenticated session can read all 32 paths in
   `qa/guardian/desktop-owner-api-contracts.json` with HTTP 200 and the declared
@@ -56,3 +58,9 @@ shared here because it is an outside-in release contract; state-changing branch
 and business regressions remain beside PestFlow application code. The recorded
 Browserbase owner session runs the external contract once per Guardian run and
 stores no response bodies.
+
+Current reviewed head `a9c9e66` on PestFlow PR #89 adds provider/field tenant
+validation, nine database constraints, the missing ProGlove schema migration,
+and eight focused provider/field regressions. Its aggregate-only production
+inventory inspected 536 populated references and 259 paired relationships with
+zero mismatches and without sending email, SMS, invitations, or signatures.
