@@ -361,6 +361,26 @@ mutation uses an operation-specific idempotency key in a ten-minute window.
 This preserves intentional owner testing without turning retries into duplicate
 customers, invoices, line items, finalizations, or sends.
 
+The same retry contract now covers every direct Resend delivery path. All 24
+calls across authentication, onboarding, lifecycle sequences, reports,
+contracts, review requests, Website Chat, feature receipts, invitations,
+messaging, service notifications, and billing attach a deterministic provider
+idempotency key. Durable scheduled work uses its ledger/send ID. Automatic
+one-time events use the underlying business record. Human-triggered actions use
+a one-minute bucket so a retry or double-click is suppressed while a later
+intentional resend remains possible. The key contains a safe event label and a
+SHA-256 digest, never an email address or customer content. A repository-wide
+AST contract fails if a future direct Resend call omits the header.
+
+A release also type-checks both halves of PestFlow. The former frontend-only
+TypeScript command left the entire Hono server outside the graph. The release
+gate now runs `npm run typecheck`, which checks the React application and every
+server module. This gate exposed and fixed real production risks including a
+missing Website Chat install-instruction import, stale Stripe Checkout mode,
+incorrect connected-account SetupIntent retrieval, current/legacy Stripe
+invoice subscription drift, direct-response parsing mistakes, and undefined or
+incorrectly named frontend controls.
+
 A state-changing journey is green only when all required layers agree. For an
 invoice send, that can include UI completion, API response, invoice row, correct
 customer and billing type, delivery audit, provider acceptance, correct PDF, and
@@ -433,7 +453,8 @@ foundation is desktop-first and actively covers the first four sizes.
 
 ## 12. Trigger and release policy
 
-- Pull request: unit/contracts, change-map validation, build, and risk selection.
+- Pull request: frontend/server type checks, unit/contracts, change-map validation,
+  build, and risk selection.
 - Candidate deployment: public outcome oracles plus selected deterministic and
   Browserbase journeys.
 - Production deployment: immediate critical canary and deployed-SHA proof.

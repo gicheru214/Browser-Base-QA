@@ -9,6 +9,13 @@ release verdict.
 PestFlow owns its application code, health endpoints, deployment commit identity,
 isolated QA fixture lifecycle, and focused unit/integration/browser regressions.
 
+There is one hybrid browser journey. Stagehand handles only adaptable semantic
+navigation or extraction; Playwright retains deterministic assertions, network
+and console evidence, viewport checks, screenshots, and the final verdict.
+Browserbase hosts and records that journey. Maintaining a parallel Stagehand suite
+and Playwright suite for the same business flow would be redundant and is not the
+recommended architecture.
+
 ## Required PestFlow contracts
 
 - `GET /health` on the frontend returns service identity and deployed commit SHA.
@@ -59,11 +66,13 @@ and business regressions remain beside PestFlow application code. The recorded
 Browserbase owner session runs the external contract once per Guardian run and
 stores no response bodies.
 
-Current reviewed head `36e7ab7` on PestFlow PR #89 adds provider/field tenant
+Current reviewed head `9083c93` on PestFlow PR #89 adds provider/field tenant
 validation, nine database constraints, the missing ProGlove schema migration,
 and eight focused provider/field regressions. Its aggregate-only production
 inventory inspected 536 populated references and 259 paired relationships with
 zero mismatches and without sending email, SMS, invitations, or signatures.
 It also makes the 28-email preview endpoint unavailable in production and gives
 the intentional Stripe test-send server-verified confirmation plus a ten-minute
-operation-specific idempotency window.
+operation-specific idempotency window. The same head typechecks the complete
+frontend and Hono server graphs and protects all 24 direct Resend deliveries with
+deterministic idempotency keys enforced by a repository-wide source contract.

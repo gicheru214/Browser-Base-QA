@@ -157,6 +157,9 @@ fingerprint from customer-relevant evidence.
 | `src/test/coreTenantWriteRoutes.test.ts` | Proves six core desktop write routes return 404 before persistence when supplied references belong outside the authenticated company. |
 | `src/test/remainingTenantWriteRoutes.test.ts` | Proves scheduled SMS, trap scans, team/portal invites, and signing emails reject foreign references or unauthorized recipients before persistence or provider delivery. |
 | `src/test/providerDiagnosticSafety.test.ts` | Locks the Stripe diagnostic confirmation, ten-minute operation-specific idempotency, and confirmation wiring in every desktop/mobile caller. |
+| `src/test/resendIdempotency.test.ts` | Locks deterministic, hashed provider event identity and the intentional manual resend window. |
+| `src/test/resendIdempotencyCoverage.test.ts` | AST-scans all direct Resend calls so a new delivery path cannot bypass retry protection. |
+| `src/test/serverReliabilityContracts.test.ts` | Locks full-stack typecheck wiring, Stripe SDK compatibility, and Website Chat import integrity. |
 | `scripts/desktop-critical-report.mjs` | Aggregates deterministic desktop results and API health into report artifacts. |
 | `scripts/desktop-critical-notify.mjs` | Formats/sends desktop critical workflow notification evidence. |
 | `scripts/run-staging-features-qa.mjs` | Runs broader staging feature coverage and records Railway health. |
@@ -283,12 +286,18 @@ first-attempt failures remain in the session evidence.
 | `server/routes/invites.ts` | Validates supplied technician and optional customer ledger references before invite or portal-provider work. |
 | `server/routes/messaging.ts` | Requires an owned document/customer and matching recipient before contract-signing email can reach Resend. |
 | `server/routes/feature-actions.ts` | Sends owner-facing feature-action receipts; its 28-email staging proof endpoint fails closed with 404 in production. |
+| `server/lib/resendIdempotency.ts` | Generates non-PII SHA-256 Resend keys and the one-minute bucket used only for intentionally repeatable human actions. |
+| `server/lib/sqlJson.ts` | Converts loosely typed request/internal metadata to a validated JSON-safe postgres.js parameter before persistence. |
+| `tsconfig.server.json` | Adds the complete Hono server tree to TypeScript verification; `npm run typecheck` now checks frontend and server together. |
 | `src/test/companyBranchesRoute.test.ts` | Locks route ordering, company isolation, name validation, creation, and primary-branch protection. |
 | `src/test/operationalInventoryTenantScope.test.ts` | Locks UUID validation and tenant ownership for equipment-use and chemical-application writes. |
 | `src/test/companyReferences.test.ts` | Locks the reusable core reference validator and its audited route inventory. |
 | `src/test/coreTenantWriteRoutes.test.ts` | Locks foreign-reference rejection across notes, jobs, invoices, agreements, documents, and contracts. |
 | `src/test/remainingTenantWriteRoutes.test.ts` | Locks provider/field rejection and proves external delivery is not reached for unauthorized input. |
 | `src/test/providerDiagnosticSafety.test.ts` | Locks production bulk-preview denial and Stripe diagnostic confirmation/idempotency across all callers. |
+| `src/test/resendIdempotency.test.ts` | Proves stable durable retries, event isolation, non-PII keys, and the manual resend minute boundary. |
+| `src/test/resendIdempotencyCoverage.test.ts` | Parses every server TypeScript file and fails when a direct Resend request lacks an `Idempotency-Key`. |
+| `src/test/serverReliabilityContracts.test.ts` | Locks the full server typecheck/release wiring plus current Stripe and Website Chat SDK contracts. |
 | `src/test/desktopAppLayoutContract.test.ts` | Locks the title fallback and both previously crashing feature titles. |
 
 The disposable cloud browser may receive two first-run local onboarding dialogs
@@ -449,7 +458,7 @@ release oracle requires every name before promotion.
 ## 10. Package and configuration changes
 
 - `package.json` adds Guardian, selector, verdict, policy, incident, fixture
-  inventory, and operational tenant-audit commands.
+  inventory, operational tenant-audit, and complete frontend/server typecheck commands.
 - `package-lock.json` pins Stagehand and Browserbase SDK dependencies.
 - `.env.example` documents Browserbase project, context, model, environment, and
   safety variables without containing real secrets.
@@ -459,6 +468,7 @@ Important commands:
 
 ```bash
 npm run test:qa:guardian:dry-run -- --tier=1
+npm run typecheck
 npm run test:qa:guardian:policy
 npm run test:qa:guardian:oracles
 npm run test:qa:incident

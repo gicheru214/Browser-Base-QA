@@ -24,6 +24,19 @@ very strict customer and release inspector standing outside it.
 9. Applies one release policy. Missing evidence blocks the release; infrastructure
    trouble is reported separately from a PestFlow product failure.
 
+## Why Stagehand and Playwright are both here
+
+They are complementary layers in one test journey, not duplicate test suites.
+Stagehand is the adaptable operator: it identifies controls and page state by
+meaning when harmless markup or placement changes. Playwright is the strict
+referee: it owns exact assertions, URLs, network evidence, screenshots, viewport
+checks, and the final pass/fail result. Browserbase supplies the remote browser,
+session isolation, recording, and replay evidence where both layers run.
+
+Use Playwright directly for stable critical mechanics. Hand only the uncertain
+navigation step to Stagehand, then return to Playwright for the business outcome.
+Never let Stagehand weaken an assertion or invent success.
+
 This cannot mathematically guarantee zero bugs. It makes production much more
 brutal and effective by forcing every candidate to prove itself, continuously
 testing the live product, and turning escaped bugs into permanent regression
@@ -80,13 +93,16 @@ all five temporary accounts were deleted and login rejection was verified. The
 repair remains on PestFlow's reviewed QA branch until deployment is authorized.
 That branch now also protects scheduled SMS, signing email, team/portal invites,
 and ProGlove scans before any provider call or persistence. Its exact head is
-`36e7ab7` on PR #89. The complete local gate passed 798 unit tests, 48 Guardian
-policy tests, 16 incident tests, TypeScript, lint, and the production build. The
+`9083c93` on PR #89. The complete local gate passed 808 unit tests across 82
+files, 48 Guardian policy tests, 16 incident tests, complete frontend and server
+TypeScript graphs, touched high-signal lint, and the production build. The
 read-only production inventory found zero mismatches across 536 provider/field
 references and 259 paired relationships. Production is not certified until the
 reviewed branch deploys and all 26 database constraints appear in `/health/schema`.
 The same head also removes the production 28-email preview surface and makes the
 real Stripe test-send require confirmation plus ten-minute provider idempotency.
+All 24 direct Resend deliveries now carry privacy-safe deterministic idempotency
+keys, with an AST contract that prevents new unguarded email paths.
 
 ## Documentation
 
